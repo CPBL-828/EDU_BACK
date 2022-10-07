@@ -1,19 +1,23 @@
 from django.db import models
 
 
-# 강사 model 생성
-class Teacher(models.Model):
-    teacherKey = models.CharField(max_length=50, primary_key=True)
-    name = models.CharField(max_length=10)
-    id = models.CharField(max_length=50)
-    part = models.CharField(max_length=10)
-    resSubject = models.CharField(max_length=10)
-    joinDate = models.DateTimeField(auto_now_add=True)
-    leaveDate = models.DateTimeField(auto_now=True)
-    resume = models.CharField(max_length=50)
-    profileImg = models.CharField(max_length=50)
-    createDate = models.DateTimeField(auto_now_add=True)
-    editDate = models.DateTimeField(auto_now=True)
+# Create your models here.
+
+class Question(models.Model):
+    subject = models.CharField(max_length=200)
+    content = models.TextField()
+    create_date = models.DateTimeField()
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    content = models.TextField()
+    create_date = models.DateTimeField()
+
+
+# Test API 생성
+class Test(models.Model):
+    main = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.teacherKey
+        return self.main
