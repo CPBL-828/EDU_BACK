@@ -139,3 +139,5 @@ dmypy.json
 cython_debug/
 
 /projects/venvs/EDU/Scripts/python.exe
+!/projects/mysite/db.sqlite3
+!/projects/EDU/config/settings.py
