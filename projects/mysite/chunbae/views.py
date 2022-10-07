@@ -1,14 +1,11 @@
 from django.shortcuts import render
-import json
-# json데이터를 파이썬 딕셔너리로 변환
+import json  # json데이터를 파이썬 딕셔너리로 변환
 from django.http import HttpResponse
-from django.http import JsonResponse
-# 파이썬 딕셔너리 JSON 변환, 프론트응답
-from django.views import View
-# view기능이 담긴 모듈
+from django.http import JsonResponse  # 파이썬 딕셔너리 JSON 변환, 프론트응답
+from django.views import View  # view기능이 담긴 모듈
 from rest_framework import viewsets
-from .serializers import TestSerializer
-from .models import Test
+from .serializer import TeacherSerializer
+from .models import Teacher
 import datetime
 
 
@@ -24,6 +21,6 @@ def index(request):
     return HttpResponse(eH + ":" + eM)
 
 
-class TestViewSet(viewsets.ModelViewSet):
-    queryset = Test.objects.all()
-    serializer_class = TestSerializer
+class TeacherViewSet(viewsets.ModelViewSet):
+    queryset = Teacher.objects.all()
+    serializer_class = TeacherSerializer

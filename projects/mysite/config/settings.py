@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'chunbae.apps.ChunbaeConfig',
+    'chunbae',
+    #'chunbae.apps.ChunbaeConfig',
 ]
 
 MIDDLEWARE = [
@@ -90,6 +91,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
+
 }
 
 

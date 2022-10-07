@@ -1,20 +1,16 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from rest_framework import routers
-from ninja import NinjaAPI
 from . import views
-from views import TestViewSet
+from .views import TeacherViewSet
 
 app_name = 'chunbae'
 
-api = NinjaAPI()
-
 router = routers.DefaultRouter()
-router.register('test', TestViewSet)
-
+#router.register(r'teacher', TeacherViewSet, basename='Teacher')
 
 urlpatterns = [
-    path('', views.index),
-    path('admin/', admin.site.urls),
-    path('test', TestViewSet.as_view())
+    # path('teacher/', include(router.urls)),
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
