@@ -106,7 +106,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+projects/EDU/.env
 .venv
 env/
 venv/
@@ -140,4 +140,7 @@ cython_debug/
 
 /projects/venvs/EDU/Scripts/python.exe
 !/projects/mysite/db.sqlite3
-!/projects/EDU/config/settings.py
+!/projects/BK/config/settings.py
+!/projects/EDU/.env
+!/projects/EDU/db.sqlite3
+!/projects/venvs/
