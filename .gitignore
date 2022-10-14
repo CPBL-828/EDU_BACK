@@ -138,10 +138,6 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-/projects/venvs/EDU/Scripts/python.exe
-!/projects/mysite/db.sqlite3
-!/projects/BK/config/settings.py
-!/projects/EDU/.env
-!/projects/EDU/db.sqlite3
-!/projects/venvs/
-!/projects/venvs/EDU/
+/projects/venvs/
+/projects/EDU/.env
+/projects/EDU/db.sqlite3

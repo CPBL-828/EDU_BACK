@@ -5,7 +5,7 @@ from .models import Teacher
 from rest_framework import permissions
 
 
-# Teacher model 에 대한 view
+# CUSTOM model 에 대한 view
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
