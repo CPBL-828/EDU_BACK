@@ -144,3 +144,4 @@ cython_debug/
 !/projects/EDU/.env
 !/projects/EDU/db.sqlite3
 !/projects/venvs/
+!/projects/venvs/EDU/
