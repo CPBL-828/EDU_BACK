@@ -141,3 +141,4 @@ cython_debug/
 /projects/venvs/
 /projects/EDU/.env
 /projects/EDU/db.sqlite3
+/projects/EDU/secrets.json
