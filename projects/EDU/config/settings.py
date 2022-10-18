@@ -53,7 +53,8 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '172.30.1.28']
+ALLOWED_HOSTS = ['localhost', '172.30.1.28', '127.0.0.1', '192.168.0.14',]
+
 
 # Application definition
 
@@ -133,6 +134,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
+
+DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 LANGUAGE_CODE = 'ko-kr'
 

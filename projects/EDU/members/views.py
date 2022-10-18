@@ -1,4 +1,5 @@
 # serializer 및 drf 사용
+import json
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -20,12 +21,17 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def compare(self, request):
-        ident = Teacher.objects.get(id)
-        data = request.data
-        if ident == data:
-            return Response('alright')
-        else:
-            return Response('wrong')
+        data = request.data['id']
+        ident = Teacher.objects.filter(id=data).values()
+
+        print("request >> ", data)
+        print("ident : ", ident)
+
+        return HttpResponse(ident)
+        # if ident['id'] == data:
+        #     return HttpResponse('Yeah')
+        # else:
+        #     return HttpResponse('wrong')
 
 
 teacher_list = TeacherViewSet.as_view({
