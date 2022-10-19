@@ -19,19 +19,28 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
     # 로그인 인증된 요청에 한해 view 호출 허용
 
+    # Teacher id & 수신 데이터 비교
     @action(detail=False, methods=['post'])
     def compare(self, request):
+
+        # 수신 데이터 data에 저장
         data = request.data['id']
-        ident = Teacher.objects.filter(id=data).values()
 
-        print("request >> ", data)
-        print("ident : ", ident)
+        # Teacher 모델에서 수신 데이터와 매치되는 값 ident에 저장
+        ident = Teacher.objects.get(id=data)
 
-        return HttpResponse(ident)
-        # if ident['id'] == data:
-        #     return HttpResponse('Yeah')
-        # else:
-        #     return HttpResponse('wrong')
+        try:
+            if Teacher.objects.filter(id=data).exists():
+                # ident는 키를 반환, 해당 키를 가진 모델의 id 필드값과 data 비교
+                if ident.id == data:
+                    return JsonResponse({'message': 'sinha~'}, status=200)
+                else:
+                    return JsonResponse({'message': 'sinba~'}, status=400)
+            else:
+                return HttpResponse(status=400)
+
+        except KeyError:
+            return HttpResponse(status=400)
 
 
 teacher_list = TeacherViewSet.as_view({
