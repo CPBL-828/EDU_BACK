@@ -8,12 +8,13 @@ from .models import Teacher
 # JSON
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
+from django.core import serializers
 
 
 # CUSTOM model 에 대한 view
 class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
-    serializer_class = TeacherSerializer
+    serializer_teacher = TeacherSerializer
 
     # permission_classes = (permissions.IsAuthenticated,)
 
@@ -28,12 +29,18 @@ class TeacherViewSet(viewsets.ModelViewSet):
 
         # Teacher 모델에서 수신 데이터와 매치되는 값 ident에 저장
         ident = Teacher.objects.get(id=data)
+        info = Teacher.objects.filter(id=data)
+        info_json = TeacherSerializer(ident)
+
+        print('ident >>> : ', ident.id)
+        print('주노주노 >>> ', info_json)
+        print('info_json.data >>> : \n', info_json.data)
 
         try:
-            if Teacher.objects.filter(id=data).exists():
+            if info.exists():
                 # ident는 키를 반환, 해당 키를 가진 모델의 id 필드값과 data 비교
                 if ident.id == data:
-                    return JsonResponse({'message': 'sinha~'}, status=200)
+                    return JsonResponse(info_json.data, json_dumps_params={'ensure_ascii': False},  status=200)
                 else:
                     return JsonResponse({'message': 'sinba~'}, status=400)
             else:
