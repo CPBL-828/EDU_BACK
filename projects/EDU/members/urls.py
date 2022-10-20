@@ -6,10 +6,11 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r'teacher', views.TeacherViewSet)
+router.register(r'teacher', views.TeacherViewSet, basename='chunbae')
 
 urlpatterns = [
    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
+   path('compare/', views.compare),
    path('', include(router.urls)),
    #path('teacher/', views.teacher_list, name='teacher_list'),
    #path('teacher/<int:pk>/', views.teacher_detail, name='teacher_detail'),

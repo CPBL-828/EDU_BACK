@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+
+import json
+import os
 from pathlib import Path
 
 # SECRETKEY 관리
-import os, json
 from django.core.exceptions import ImproperlyConfigured
 
 # import environ
@@ -154,3 +156,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/image/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'image')
