@@ -131,7 +131,7 @@ def compare(request):
             # ident는 키를 반환, 해당 키를 가진 모델의 id 필드값과 data 비교
             if ident.id == data:
                 # {'ensure_ascii' : False} => json 문자열이 한글로 표시되도록
-                return JsonResponse({'chunbae': '어서오세요, 주인님!'}, info_json.data, json_dumps_params={'ensure_ascii': False}, status=200)
+                return JsonResponse(info_json.data, json_dumps_params={'ensure_ascii': False}, status=200)
             else:
                 return JsonResponse({'message': '주인님이 아니시군요?'}, status=400)
         else:
