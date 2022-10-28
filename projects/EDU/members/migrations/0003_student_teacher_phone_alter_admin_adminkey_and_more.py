@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='teacher',
             name='phone',
-            field=models.CharField(default='010-3535-2424', max_length=11, verbose_name='연락처'),
+            field=models.CharField(default='01035352424', max_length=11, verbose_name='연락처'),
             preserve_default=False,
         ),
         migrations.AlterField(
