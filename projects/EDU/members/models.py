@@ -35,7 +35,8 @@ class Admin(models.Model):
 # 학생 모델 생성
 class Student(models.Model):
     studentKey = models.CharField(max_length=50, primary_key=True, verbose_name='학생키')
-    name = models.CharField(max_length=50, verbose_name='강사명')
+    name = models.CharField(max_length=50, verbose_name='학생명')
+    id = models.CharField(max_length=50, verbose_name='학생id')
     birth = models.DateField(verbose_name='생년월일')
     sex = models.CharField(max_length=1, verbose_name='성별')
     phone = models.CharField(max_length=11, verbose_name='연락처')
@@ -56,6 +57,7 @@ class Student(models.Model):
 class Parent(models.Model):
     parentKey = models.CharField(max_length=50, primary_key=True, verbose_name='부모키')
     studentKey = models.ForeignKey('Student', on_delete=models.CASCADE, verbose_name='학생키')
+    id = models.CharField(max_length=50, verbose_name='부모id')
     name = models.CharField(max_length=10, verbose_name='이름')
     phone = models.CharField(max_length=10, verbose_name='연락처')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')

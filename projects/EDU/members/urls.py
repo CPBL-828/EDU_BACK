@@ -5,9 +5,14 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.routers import DefaultRouter
 from . import views
 
+# DRF 라우터
 router = DefaultRouter()
-router.register(r'teacher', views.TeacherViewSet, basename='chunbae')
+router.register(r'teacher', views.TeacherViewSet, basename='teacher')
+router.register(r'admin', views.AdminViewSet, basename='admin')
+router.register(r'student', views.StudentViewSet, basename='student')
+router.register(r'parent', views.ParentViewSet, basename='parent')
 
+# URL 지정
 urlpatterns = [
    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
    path('compare/', views.compare),

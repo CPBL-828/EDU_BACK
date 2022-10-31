@@ -23,12 +23,12 @@ class TeacherViewSet(viewsets.ModelViewSet):
     # 로그인 인증된 요청에 한해 view 호출 허용
 
 
-member_list = TeacherViewSet.as_view({
+teacher_list = TeacherViewSet.as_view({
     'get': 'list',
     'post': 'create',
 })
 
-member_detail = TeacherViewSet.as_view({
+teacher_detail = TeacherViewSet.as_view({
     'get': 'retrieve',
     # 'put': 'update',
     'patch': 'partial_update',
@@ -36,6 +36,61 @@ member_detail = TeacherViewSet.as_view({
 })
 
 
+class AdminViewSet(viewsets.ModelViewSet):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer
+
+
+admin_list = AdminViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+admin_detail = AdminViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class StudentViewSet(viewsets.ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+
+student_list = AdminViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+student_detail = AdminViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class ParentViewSet(viewsets.ModelViewSet):
+    queryset = Parent.objects.all()
+    serializer_class = ParentSerializer
+
+
+parent_list = AdminViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+parent_detail = AdminViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+# 로그인 로직
 @api_view(['POST'])
 def compare(request):
     # user_type -> 강사: TEA, 관리자: ADM, 학생: STU, 학부모: PAR
