@@ -55,7 +55,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '172.30.1.28', '127.0.0.1', '192.168.0.14',]
+ALLOWED_HOSTS = ['localhost', '172.30.1.28', '127.0.0.1', '192.168.0.14', '43.201.64.65', '*.amazonaws.com', '49.174.115.70']
 
 
 # Application definition
@@ -111,10 +111,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': get_secret("DATABASE_ENGINE"),
+        'NAME': get_secret("DATABASE_NAME"),
+        'USER': get_secret("DATABASE_USER"),
+        'PASSWORD': get_secret("DATABASE_PASS"),
+        'HOST': get_secret("DATABASE_HOST"),
+        'PORT': get_secret("DATABASE_PORT"),
+        }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
