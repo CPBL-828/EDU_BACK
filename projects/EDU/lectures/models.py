@@ -1,5 +1,5 @@
 from django.db import models
-from ..members.models import Teacher, Admin
+from ..members.models import *
 
 
 # 강의 관련 모델 작성
@@ -17,8 +17,19 @@ class LectureRoom(models.Model):
 # 강의 모델 작성
 class Lecture(models.Model):
     lectureKey = models.CharField(max_length=50)
-    roomKey = models.ForeignKey('Teacher', on_delete=models.CASCADE)
-    adminKey = models.ForeignKey('Admin', on_delete=models.CASCADE)
-    name = models.CharField(max_length=10)
-    type = models.CharField(max_length=10)
-
+    roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, verbose_name='강의실키')
+    teacherKey = models.ForeignKey('Teacher', on_delete=models.CASCADE, verbose_name='강사키')
+    adminKey = models.ForeignKey('Admin', on_delete=models.CASCADE, verbose_name='관리자키')
+    name = models.CharField(max_length=10, verbose_name='강의명')
+    type = models.CharField(max_length=10, verbose_name='강의유형')
+    subject = models.CharField(max_length=10, verbose_name='과목')
+    book = models.CharField(max_length=50, verbose_name='주교재')
+    target = models.CharField(max_length=10, verbose_name='대상학년')
+    day = models.CharField(max_length=1, verbose_name='요일')
+    startTime = models.CharField(max_length=5, verbose_name='시작시간')
+    duration = models.IntegerField(verbose_name='지속시간')
+    suggestDate = models.DateTimeField(auto_now=True, verbose_name='건의일자')
+    progress = models.CharField(max_length=10, verbose_name='진행상태')
+    reason = models.TextField(blank=True, verbose_name='사유')
+    createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
+    editDate = models.DateTimeField(auto_now=True, verbose_name='수정일')
