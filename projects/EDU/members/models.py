@@ -59,6 +59,6 @@ class Parent(models.Model):
     studentKey = models.ForeignKey('Student', on_delete=models.CASCADE, verbose_name='학생키')
     id = models.CharField(max_length=50, verbose_name='부모id')
     name = models.CharField(max_length=10, verbose_name='이름')
-    phone = models.CharField(max_length=10, verbose_name='연락처')
+    phone = models.CharField(max_length=11, verbose_name='연락처')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(auto_now=True, verbose_name='수정일')
