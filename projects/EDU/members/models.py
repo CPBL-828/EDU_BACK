@@ -1,4 +1,6 @@
+import os
 from django.db import models
+from lectures.models import *
 
 
 # 강사 모델 생성

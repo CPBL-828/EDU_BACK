@@ -11,10 +11,12 @@ from .models import Teacher, Admin, Student, Parent
 # api_view 작성
 from rest_framework.decorators import api_view
 # JSON
+import json
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
+
 
 # CUSTOM model 에 대한 view
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -199,12 +201,13 @@ def compare(request):
 # 학생 리스트 반환
 @api_view(['POST'])
 def get_student_list(request):
-
     data = list(Student.objects.filter(
         Q(name__icontains=request.data['search']) |
         Q(school__icontains=request.data['search'])
     ).values())
 
-    return JsonResponse(data, safe=False, status=200)
+    # data_length = {'list_count': len(data)}
+    #
+    # data += data_length
 
-
+    return HttpResponse(data, status=200)

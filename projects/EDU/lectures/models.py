@@ -1,5 +1,6 @@
+import os
 from django.db import models
-from ..members.models import *
+from members.models import *
 
 
 # 강의 관련 모델 작성
@@ -18,8 +19,8 @@ class LectureRoom(models.Model):
 class Lecture(models.Model):
     lectureKey = models.CharField(max_length=50)
     roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, verbose_name='강의실키')
-    teacherKey = models.ForeignKey('Teacher', on_delete=models.CASCADE, verbose_name='강사키')
-    adminKey = models.ForeignKey('Admin', on_delete=models.CASCADE, verbose_name='관리자키')
+    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, verbose_name='강사키')
+    adminKey = models.ForeignKey('members.Admin', on_delete=models.CASCADE, verbose_name='관리자키')
     name = models.CharField(max_length=10, verbose_name='강의명')
     type = models.CharField(max_length=10, verbose_name='강의유형')
     subject = models.CharField(max_length=10, verbose_name='과목')
