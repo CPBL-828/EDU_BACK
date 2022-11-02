@@ -160,5 +160,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-MEDIA_URL = '/image/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'EDU/../../image')
+# URL 경로 설정
+#MEDIA_URL = '/media/'
+# 실제 저장 장소
+#MEDIA_ROOT = os.path.join(BASE_DIR, "media")

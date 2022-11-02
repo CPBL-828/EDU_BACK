@@ -13,7 +13,8 @@ from rest_framework.decorators import api_view
 # JSON
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-
+# 장고 모델 검색 기능
+from django.db.models import Q
 
 # CUSTOM model 에 대한 view
 class TeacherViewSet(viewsets.ModelViewSet):
@@ -119,7 +120,6 @@ def compare(request):
         except KeyError:
             return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
-
     elif user_type == 'ADM':
 
         queryset = Admin.objects.all()
@@ -127,11 +127,11 @@ def compare(request):
 
         try:
             if (Admin.objects.filter(id=data)).exists():
-                # Teacher 모델에서 수신 데이터와 매치되는 값 ident에 저장
+                # Admin 모델에서 수신 데이터와 매치되는 값 ident에 저장
                 ident = Admin.objects.get(id=data)
-                # Teacher 모델 id=data인 데이터 조회
+                # Admin 모델 id=data인 데이터 조회
                 info = Admin.objects.filter(id=data)
-                # ident 값 serializer를 통해 json 파싱 / queryset => json
+                # Admin 값 serializer를 통해 json 파싱 / queryset => json
                 info_json = AdminSerializer(ident)
 
             else:
@@ -146,9 +146,9 @@ def compare(request):
 
         try:
             if (Student.objects.filter(id=data).values()).exists():
-                # Teacher 모델에서 수신 데이터와 매치되는 값 ident에 저장
+                # Student 모델에서 수신 데이터와 매치되는 값 ident에 저장
                 ident = Student.objects.get(id=data)
-                # Teacher 모델 id=data인 데이터 조회
+                # Student 모델 id=data인 데이터 조회
                 info = Student.objects.filter(id=data)
                 # ident 값 serializer를 통해 json 파싱 / queryset => json
                 info_json = StudentSerializer(ident)
@@ -165,11 +165,11 @@ def compare(request):
 
         try:
             if (Parent.objects.filter(id=data)).exists():
-                # Teacher 모델에서 수신 데이터와 매치되는 값 ident에 저장
+                # Parent 모델에서 수신 데이터와 매치되는 값 ident에 저장
                 ident = Parent.objects.get(id=data)
-                # Teacher 모델 id=data인 데이터 조회
+                # Parent 모델 id=data인 데이터 조회
                 info = Parent.objects.filter(id=data)
-                # ident 값 serializer를 통해 json 파싱 / queryset => json
+                # Parent 값 serializer를 통해 json 파싱 / queryset => json
                 info_json = ParentSerializer(ident)
 
             else:
@@ -195,10 +195,16 @@ def compare(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
-# querry = 'SELECT user_name FROM user_info '
-# if(client.name){
-# querry += 'WHEHE user_name = $' + client.name + ' ';
-# }
-#
-#
-# data = await db.cusor(querry, param);
+
+# 학생 리스트 반환
+@api_view(['POST'])
+def get_student_list(request):
+
+    data = list(Student.objects.filter(
+        Q(name__icontains=request.data['search']) |
+        Q(school__icontains=request.data['search'])
+    ).values())
+
+    return JsonResponse(data, safe=False, status=200)
+
+

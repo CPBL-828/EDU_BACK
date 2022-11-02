@@ -16,6 +16,7 @@ router.register(r'parent', views.ParentViewSet, basename='parent')
 urlpatterns = [
    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
    path('compare/', views.compare),
+   path('getStudentList/', views.get_student_list),
    path('', include(router.urls)),
    #path('teacher/', views.teacher_list, name='teacher_list'),
    #path('teacher/<int:pk>/', views.teacher_detail, name='teacher_detail'),
