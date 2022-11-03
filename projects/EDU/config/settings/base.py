@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'members',
     'lectures',
+    'info',
     'drf_yasg',
 ]
 

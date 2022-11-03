@@ -5,9 +5,9 @@ from rest_framework.response import Response
 # Serializer 불러오기
 from django.core import serializers
 from . import serializers
-from .serializers import TeacherSerializer, AdminSerializer, StudentSerializer, ParentSerializer
+from .serializers import *
 # 모델 불러오기
-from .models import Teacher, Admin, Student, Parent
+from .models import *
 # api_view 작성
 from rest_framework.decorators import api_view
 # JSON
@@ -209,3 +209,4 @@ def get_student_list(request):
     result = {'resultData': data, 'count': len(data)}
 
     return JsonResponse(result, status=200)
+
