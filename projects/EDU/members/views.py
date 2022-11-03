@@ -206,8 +206,6 @@ def get_student_list(request):
         Q(school__icontains=request.data['search'])
     ).values())
 
-    data_length = {'count': len(data)}
+    result = {'resultData': data, 'count': len(data)}
 
-    result = [{'resultData': data}, data_length]
-
-    return HttpResponse(result, status=200)
+    return JsonResponse(result, status=200)
