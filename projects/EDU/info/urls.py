@@ -5,8 +5,15 @@ from . import views
 
 router = DefaultRouter()
 router.register(r'notice', views.NoticeViewSet, basename='notice')
+router.register(r'attend', views.AttendViewSet, basename='attend')
+router.register(r'work', views.WorkViewSet, basename='work')
+router.register(r'suggest', views.SuggestViewSet, basename='suggest')
+router.register(r'consult', views.ConsultViewSet, basename='consult')
+router.register(r'analysis', views.AnalysisViewSet, basename='analysis')
+
 
 urlpatterns = [
    path('getNoticeList/', views.get_notice_list),
+   path('getSuggestList/', views.get_suggest_list),
    path('', include(router.urls)),
 ]

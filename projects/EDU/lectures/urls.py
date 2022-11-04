@@ -5,11 +5,18 @@ from . import views
 
 # DRF 라우터
 router = DefaultRouter()
-router.register(r'lectureRoom', views.LectureRoomViewSet, basename='notice')
-router.register(r'lecture', views.LectureViewSet, basename='notice')
+router.register(r'lectureRoom', views.LectureRoomViewSet, basename='lectureRoom')
+router.register(r'lecture', views.LectureViewSet, basename='lecture')
+router.register(r'lectureStatus', views.LectureStatusViewSet, basename='lectureStatus')
+router.register(r'assign', views.AssignViewSet, basename='assign')
+router.register(r'test', views.TestViewSet, basename='test')
+router.register(r'testStatus', views.TestStatusViewSet, basename='testStatus')
+router.register(r'record', views.RecordViewSet, basename='record')
+router.register(r'planner', views.TestViewSet, basename='planner')
+
 
 urlpatterns = [
-   # path('getLectureRoomList/', views.get_lectureRoom_list),
-   # path('getLectureList/', views.get_lecture_list),
-   path('', include(router.urls)),
+   path('getLectureRoomList/', views.get_lectureRoom_list),
+   path('getLectureList/', views.get_lecture_list),
+   path('/', include(router.urls)),
 ]

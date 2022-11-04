@@ -203,10 +203,24 @@ def compare(request):
 def get_student_list(request):
     data = list(Student.objects.filter(
         Q(name__icontains=request.data['search']) |
-        Q(school__icontains=request.data['search'])
+        Q(school__icontains=request.data['search']) |
+        Q(grade__icontains=request.data['search'])
     ).values())
 
     result = {'resultData': data, 'count': len(data)}
 
     return JsonResponse(result, status=200)
 
+
+# 강사 리스트 반환
+@api_view(['POST'])
+def get_teacher_list(request):
+    data = list(Teacher.objects.filter(
+        Q(name__icontains=request.data['search']) |
+        Q(part__icontains=request.data['search']) |
+        Q(resSubject__icontains=request.data['search'])
+    ).values())
+
+    result = {'resultData': data, 'count': len(data)}
+
+    return JsonResponse(result, status=200)

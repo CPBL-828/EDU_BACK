@@ -38,6 +38,97 @@ notice_detail = NoticeViewSet.as_view({
 })
 
 
+class AttendViewSet(viewsets.ModelViewSet):
+    queryset = Attend.objects.all()
+    serializer_class = AttendSerializer
+
+
+attend_list = AttendViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+attend_detail = AttendViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class WorkViewSet(viewsets.ModelViewSet):
+    queryset = Work.objects.all()
+    serializer_class = WorkSerializer
+
+
+work_list = WorkViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+work_detail = WorkViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class SuggestViewSet(viewsets.ModelViewSet):
+    queryset = Suggest.objects.all()
+    serializer_class = SuggestSerializer
+
+
+suggest_list = SuggestViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+suggest_detail = SuggestViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class ConsultViewSet(viewsets.ModelViewSet):
+    queryset = Consult.objects.all()
+    serializer_class = ConsultSerializer
+
+
+consult_list = ConsultViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+consult_detail = ConsultViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class AnalysisViewSet(viewsets.ModelViewSet):
+    queryset = Analysis.objects.all()
+    serializer_class = AnalysisSerializer
+
+
+analysis_list = AnalysisViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+analysis_detail = AnalysisViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+# 공지 리스트 검색 결과 반환
 @api_view(['POST'])
 def get_notice_list(request):
     data = list(Notice.objects.filter(
@@ -46,5 +137,16 @@ def get_notice_list(request):
     ).values())
 
     result = {'resultData': data, 'count': len(data)}
+
+    return JsonResponse(result, status=200)
+
+
+# 건의 사항 리스트 필터링 및 반환
+@api_view(['POST'])
+def get_suggest_list(request):
+    data = list(Suggest.objects.filter(
+        state__icontains=request.data['search']).values())
+
+    result = {'resultData': data}
 
     return JsonResponse(result, status=200)

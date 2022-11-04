@@ -51,7 +51,7 @@ class Student(models.Model):
     school = models.CharField(max_length=10, verbose_name='학교명')
     grade = models.CharField(max_length=10, verbose_name='학년')
     address = models.CharField(max_length=50, verbose_name='주소')
-    remark = models.TextField(verbose_name='특이사항')
+    remark = models.TextField(blank=True, verbose_name='특이사항')
     delState = models.CharField(max_length=1, verbose_name='삭제여부')
     profileImg = models.CharField(max_length=50, blank=True, verbose_name='프로필사진링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
