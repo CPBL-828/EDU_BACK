@@ -8,6 +8,7 @@ from . import serializers
 from .serializers import *
 # 모델 불러오기
 from .models import *
+from info.models import *
 # api_view 작성
 from rest_framework.decorators import api_view
 # JSON
@@ -201,26 +202,54 @@ def compare(request):
 # 학생 리스트 반환
 @api_view(['POST'])
 def get_student_list(request):
-    data = list(Student.objects.filter(
-        Q(name__icontains=request.data['search']) |
-        Q(school__icontains=request.data['search']) |
-        Q(grade__icontains=request.data['search'])
-    ).values())
+    try:
+        # userKey 있는 지 확인
+        if len(request.data["userKey"]) > 0:
+            # 받은 userKey와 teacherKey와 매칭
+            key = Teacher.objects.get(teacherKey=request.data["userKey"])
+            # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
+            lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('name')
+            # 강의키에 맞는 학생 리스트 정렬
+            student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
+            # 학생 리스트 생성 : 검색 기능 포함
+            student_info = list(Student.objects.filter(studentKey__in=student).filter(
+                Q(name__icontains=request.data['search']) |
+                Q(school__icontains=request.data['search']) |
+                Q(grade__icontains=request.data['search'])
+            ).values())
 
-    result = {'resultData': data, 'count': len(data)}
+            result = {'resultdata': student_info, 'count': len(student_info)}
 
-    return JsonResponse(result, status=200)
+            return JsonResponse(result, status=200)
+
+        else:
+            data = list(Student.objects.filter(
+                Q(name__icontains=request.data['search']) |
+                Q(school__icontains=request.data['search']) |
+                Q(grade__icontains=request.data['search'])
+            ).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
 # 강사 리스트 반환
 @api_view(['POST'])
 def get_teacher_list(request):
-    data = list(Teacher.objects.filter(
-        Q(name__icontains=request.data['search']) |
-        Q(part__icontains=request.data['search']) |
-        Q(resSubject__icontains=request.data['search'])
-    ).values())
 
-    result = {'resultData': data, 'count': len(data)}
+    try:
+        data = list(Teacher.objects.filter(
+            Q(name__icontains=request.data['search']) |
+            Q(part__icontains=request.data['search']) |
+            Q(resSubject__icontains=request.data['search'])
+        ).values())
 
-    return JsonResponse(result, status=200)
+        result = {'resultData': data, 'count': len(data)}
+
+        return JsonResponse(result, status=200)
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
