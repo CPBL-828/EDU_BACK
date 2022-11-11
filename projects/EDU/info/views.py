@@ -152,7 +152,7 @@ def get_notice_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            data = list(Notice.objects.filter(
+            data = list(Notice.objects.filter(type='전체').filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
             ).values())
