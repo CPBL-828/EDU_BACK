@@ -61,7 +61,7 @@ class Suggest(models.Model):
     adminKey = models.ForeignKey('members.Admin', null=True,  on_delete=models.CASCADE, verbose_name='관리자키')
     writerKey = models.CharField(max_length=50, verbose_name='작성자')
     type = models.CharField(max_length=10, verbose_name='건의유형')
-    state = models.CharField(max_length=10, verbose_name='처리여부')
+    state = models.CharField(max_length=1, verbose_name='처리여부')
     content = models.TextField(verbose_name='건의내용')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
