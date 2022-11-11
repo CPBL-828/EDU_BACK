@@ -218,7 +218,7 @@ def get_student_list(request):
                 Q(grade__icontains=request.data['search'])
             ).values())
 
-            result = {'resultdata': student_info, 'count': len(student_info)}
+            result = {'resultData': student_info, 'count': len(student_info)}
 
             return JsonResponse(result, status=200)
 
@@ -240,7 +240,6 @@ def get_student_list(request):
 # 강사 리스트 반환
 @api_view(['POST'])
 def get_teacher_list(request):
-
     try:
         data = list(Teacher.objects.filter(
             Q(name__icontains=request.data['search']) |
