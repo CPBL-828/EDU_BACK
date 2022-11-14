@@ -36,7 +36,7 @@ class Lecture(models.Model):
     subject = models.CharField(max_length=10, verbose_name='과목')
     book = models.CharField(max_length=50, verbose_name='주교재')
     target = models.CharField(max_length=10, verbose_name='대상학년')
-    day = models.CharField(max_length=1, verbose_name='요일')
+    day = models.IntegerField(verbose_name='요일')
     startTime = models.CharField(max_length=5, verbose_name='시작시간')
     duration = models.IntegerField(verbose_name='지속시간')
     # suggestDate = models.DateTimeField(auto_now=True, verbose_name='건의일자')
