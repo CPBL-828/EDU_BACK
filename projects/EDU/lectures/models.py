@@ -28,9 +28,9 @@ class LectureRoom(models.Model):
 class Lecture(models.Model):
     lectureKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                   verbose_name='강의키')
-    roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, verbose_name='강의실키')
-    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, verbose_name='강사키')
-    adminKey = models.ForeignKey('members.Admin', on_delete=models.CASCADE, verbose_name='관리자키')
+    roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, db_column='roomKey', verbose_name='강의실키')
+    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey', verbose_name='강사키')
+    adminKey = models.ForeignKey('members.Admin', on_delete=models.CASCADE, db_column='adminKey', verbose_name='관리자키')
     name = models.CharField(max_length=10, verbose_name='강의명')
     type = models.CharField(max_length=10, verbose_name='강의유형')
     subject = models.CharField(max_length=10, verbose_name='과목')
@@ -54,8 +54,8 @@ class LectureStatus(models.Model):
     lectureStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
                                         editable=False,
                                         verbose_name='수강현황키')
-    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, verbose_name='학생키')
-    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, verbose_name='강의키')
+    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
+    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
     state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
     reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일'),
@@ -70,7 +70,7 @@ class Assign(models.Model):
     assignKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
                                  editable=False,
                                  verbose_name='과제키')
-    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, verbose_name='강의키')
+    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
     targetKey = models.CharField(max_length=50, verbose_name='대상학생')
     assignment = models.CharField(max_length=50, verbose_name='과제첨부')
     content = models.TextField(verbose_name='과제내용')
@@ -86,7 +86,7 @@ class Assign(models.Model):
 class Test(models.Model):
     testKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                verbose_name='시험키')
-    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, verbose_name='강의키')
+    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
     testDate = models.DateTimeField(verbose_name='시험일자')
     testType = models.CharField(max_length=10, verbose_name='시험유형')
     testSheet = models.CharField(null=True, blank=True, max_length=50, verbose_name='시험지링크')
@@ -101,7 +101,7 @@ class Test(models.Model):
 class TestStatus(models.Model):
     testStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                      verbose_name='시험현황키')
-    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, verbose_name='학생키')
+    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
     testKey = models.ForeignKey('Test', on_delete=models.CASCADE, verbose_name='시험키')
     state = models.CharField(max_length=1, verbose_name='응시여부')
     reason = models.TextField(verbose_name='사유')
@@ -116,8 +116,8 @@ class TestStatus(models.Model):
 class Record(models.Model):
     recordKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                  verbose_name='성적키')
-    testStatusKey = models.ForeignKey('TestStatus', on_delete=models.CASCADE, verbose_name='시험현황키')
-    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, verbose_name='학생키')
+    testStatusKey = models.ForeignKey('TestStatus', on_delete=models.CASCADE, db_column='testStatusKey', verbose_name='시험현황키')
+    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
     recordAnalysis = models.TextField(verbose_name='성적분석')
     score = models.FloatField(verbose_name='점수')
     rating = models.CharField(max_length=1, verbose_name='등급')
@@ -132,8 +132,8 @@ class Record(models.Model):
 class Planner(models.Model):
     plannerKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                   verbose_name='계획서키')
-    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, verbose_name='강의키')
-    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, verbose_name='강사키')
+    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
+    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey', verbose_name='강사키')
     day = models.DateTimeField(verbose_name='강의일자')
     content = models.TextField(verbose_name='내용')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')

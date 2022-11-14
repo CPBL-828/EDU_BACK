@@ -66,7 +66,7 @@ class Student(models.Model):
 class Parent(models.Model):
     parentKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                  verbose_name='부모키')
-    studentKey = models.ForeignKey('Student', on_delete=models.CASCADE, verbose_name='학생키')
+    studentKey = models.ForeignKey('Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
     name = models.CharField(max_length=10, verbose_name='이름')
     id = models.CharField(max_length=50, unique=True, verbose_name='부모id')
     phone = models.CharField(max_length=11, verbose_name='연락처')
