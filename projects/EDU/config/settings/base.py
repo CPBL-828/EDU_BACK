@@ -70,7 +70,7 @@ INSTALLED_APPS = [
     'members',
     'lectures',
     'info',
-    'drf_yasg',
+    'django_seed',
 ]
 
 MIDDLEWARE = [

@@ -14,7 +14,7 @@ class Notice(models.Model):
                                  verbose_name='공지키')
     type = models.CharField(max_length=10, verbose_name='유형')
     writerKey = models.CharField(max_length=50, verbose_name='작성자')
-    readerKey = models.CharField(max_length=50, blank=True, verbose_name='열람대상')
+    readerKey = models.CharField(max_length=50, null=True, blank=True, verbose_name='열람대상')
     delState = models.CharField(max_length=1, verbose_name='삭제상태')
     title = models.CharField(max_length=50, verbose_name='제목')
     content = models.TextField(verbose_name='내용')
@@ -32,7 +32,7 @@ class Attend(models.Model):
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, verbose_name='학생키')
     lectureKey = models.ForeignKey('lectures.Lecture', on_delete=models.CASCADE, verbose_name='강의키')
     state = models.CharField(max_length=10, verbose_name='출석여부')
-    reason = models.TextField(verbose_name='수정사유')
+    reason = models.TextField(blank=True, verbose_name='수정사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
@@ -46,7 +46,7 @@ class Work(models.Model):
                                verbose_name='근무키')
     teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, verbose_name='강사키')
     state = models.CharField(max_length=10, verbose_name='상태')
-    reason = models.TextField(verbose_name='사유')
+    reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
@@ -75,7 +75,7 @@ class Consult(models.Model):
     targetKey = models.CharField(max_length=50, verbose_name='상담담당')
     consultDate = models.DateTimeField(verbose_name='상담날짜')
     consultType = models.CharField(max_length=10, verbose_name='상담유형')
-    content = models.TextField(verbose_name='상담내용')
+    content = models.TextField(blank=True, verbose_name='상담내용')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
