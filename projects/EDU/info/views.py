@@ -144,9 +144,6 @@ def get_notice_list(request):
                 Q(content__icontains=request.data['search'])
             ).values())
 
-            print(key)
-            print(notice)
-
             result = {'resultData': notice, 'count': len(notice)}
 
             return JsonResponse(result, status=200)

@@ -8,7 +8,9 @@ from django.core import serializers
 from . import serializers
 from .serializers import *
 # 모델 불러오기
-from .models import *
+from members.models import *
+from lectures.models import *
+from info.models import *
 # api_view 작성
 from rest_framework.decorators import api_view
 # JSON
@@ -179,14 +181,38 @@ def get_lectureRoom_list(request):
 # 강의 목록 검색 및 반환
 @api_view(['POST'])
 def get_lecture_list(request):
-    data = list(Lecture.objects.filter(
-        Q(name__icontains=request.data['search']) |
-        Q(type__icontains=request.data['search']) |
-        Q(subject__icontains=request.data['search']) |
-        Q(target__icontains=request.data['search']) |
-        Q(day__icontains=request.data['search'])
-    ).values())
+    try:
+        # userKey 있는 지 확인
+        if len(request.data["userKey"]) > 0:
+            # 받은 userKey와 teacherKey와 매칭
+            key = Teacher.objects.get(teacherKey=request.data["userKey"])
+            # 강사키에 맞는 강의 리스트 정렬
+            lecture = list(Lecture.objects.filter(teacherKey=key).filter(
+                Q(name__icontains=request.data['search']) |
+                Q(type__icontains=request.data['search']) |
+                Q(subject__icontains=request.data['search']) |
+                Q(target__icontains=request.data['search']) |
+                Q(day__icontains=request.data['search'])
+            ).values())
 
-    result = {'resultData': data, 'count': len(data)}
+            result = {'resultData': lecture, 'count': len(lecture)}
 
-    return JsonResponse(result, status=200)
+            return JsonResponse(result, status=200)
+
+        else:
+            data = list(Lecture.objects.filter(
+                Q(name__icontains=request.data['search']) |
+                Q(type__icontains=request.data['search']) |
+                Q(subject__icontains=request.data['search']) |
+                Q(target__icontains=request.data['search']) |
+                Q(day__icontains=request.data['search'])
+            ).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
