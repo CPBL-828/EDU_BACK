@@ -44,7 +44,7 @@ class Admin(models.Model):
 class Student(models.Model):
     studentKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                   verbose_name='학생키')
-    parentKey = models.ForeignKey('Parent', on_delete=models.CASCADE, default=uuid.uuid4, db_column='parentKey', verbose_name='부모키')
+    parentKey = models.ForeignKey('Parent', on_delete=models.CASCADE, db_column='parentKey', verbose_name='부모키')
     name = models.CharField(max_length=50, verbose_name='학생명')
     id = models.CharField(max_length=50, unique=True, verbose_name='학생id')
     birth = models.DateField(verbose_name='생년월일')
