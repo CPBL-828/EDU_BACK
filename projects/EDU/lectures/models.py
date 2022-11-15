@@ -58,7 +58,7 @@ class LectureStatus(models.Model):
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
     state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
     reason = models.TextField(blank=True, verbose_name='사유')
-    createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일'),
+    createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
     def __str__(self):
