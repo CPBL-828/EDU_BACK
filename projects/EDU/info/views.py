@@ -132,7 +132,6 @@ analysis_detail = AnalysisViewSet.as_view({
 # 공지 리스트 검색 결과 반환
 @api_view(['POST'])
 def get_notice_list(request):
-
     try:
         # userKey 있는 지 확인
         if len(request.data["userKey"]) > 0:
@@ -165,9 +164,44 @@ def get_notice_list(request):
 # 건의 사항 리스트 필터링 및 반환
 @api_view(['POST'])
 def get_suggest_list(request):
-    data = list(Suggest.objects.filter(
-        state__icontains=request.data['search']).values())
+    try:
+        data = list(Suggest.objects.filter(
+            state__icontains=request.data['search']).values())
 
-    result = {'resultData': data}
+        result = {'resultData': data, 'count': len(data)}
 
-    return JsonResponse(result, status=200)
+        return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+# 상담 리스트 필터링 및 반환
+@api_view(['POST'])
+def get_consult_list(request):
+    try:
+        # userKey, studentKey 있는 지 확인
+        if len(request.data['userKey']) > 0 and len(request.data['studentKey']) > 0:
+            # 받은 userKey와 teacherKey와 매칭
+            key = Teacher.objects.get(teacherKey=request.data['userKey'])
+            # 유저키에 맞는 상담 리스트 정렬
+            data = list(Consult.objects.filter(targetKey=key).
+                        filter(studentKey=request.data['studentKey']).values('studentKey'))
+
+            result = {'result': data, 'Count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        # 유저키만 있을 때
+        elif len(request.data['userKey']) > 0 and len(request.data['studentKey']) == 0:
+            # 받은 userKey와 teacherKey와 매칭
+            key = Teacher.objects.get(teacherKey=request.data['userKey'])
+            # 상담 리스트 정렬
+            data = list(Consult.objects.filter(targetKey=key).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)

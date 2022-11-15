@@ -102,7 +102,7 @@ class TestStatus(models.Model):
     testStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                      verbose_name='시험현황키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
-    testKey = models.ForeignKey('Test', on_delete=models.CASCADE, verbose_name='시험키')
+    testKey = models.ForeignKey('Test', on_delete=models.CASCADE, db_column='testKey', verbose_name='시험키')
     state = models.CharField(max_length=1, verbose_name='응시여부')
     reason = models.TextField(verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')

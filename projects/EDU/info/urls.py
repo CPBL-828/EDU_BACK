@@ -15,5 +15,6 @@ router.register(r'analysis', views.AnalysisViewSet, basename='analysis')
 urlpatterns = [
    path('getNoticeList/', views.get_notice_list),
    path('getSuggestList/', views.get_suggest_list),
+   path('getConsultList/', views.get_consult_list),
    path('', include(router.urls)),
 ]
