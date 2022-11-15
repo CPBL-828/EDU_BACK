@@ -186,7 +186,7 @@ def get_consult_list(request):
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 유저키에 맞는 상담 리스트 정렬
             data = list(Consult.objects.filter(targetKey=key).
-                        filter(studentKey=request.data['studentKey']).values('studentKey'))
+                        filter(studentKey=request.data['studentKey']).values())
 
             result = {'result': data, 'Count': len(data)}
 
