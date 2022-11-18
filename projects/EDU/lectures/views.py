@@ -19,6 +19,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
+# 쿼리셋 이름 변경
+from django.db.models import F
 
 
 class LectureRoomViewSet(viewsets.ModelViewSet):
@@ -193,7 +195,7 @@ def get_lecture_list(request):
                 Q(subject__icontains=request.data['search']) |
                 Q(target__icontains=request.data['search']) |
                 Q(day__icontains=request.data['search'])
-            ).values())
+            ).values('name'))
 
             result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -216,3 +218,28 @@ def get_lecture_list(request):
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
+@api_view(['POST'])
+def get_lecture_info(request):
+    try:
+        # userKey 있는 지 확인
+        if len(request.data["userKey"]) > 0 and len(request.data["roomKey"]) > 0:
+            # 받은 userKey와 teacherKey와 매칭
+            key1 = Teacher.objects.get(teacherKey=request.data["userKey"])
+            # 받은 roomKey와 roomKey와 매칭
+            key2 = LectureRoom.objects.get(roomKey=request.data["roomKey"])
+            # 정보 반환
+            name = list(Teacher.objects.filter(teacherKey=key1).values('name'))
+            room = list(LectureRoom.objects.filter(roomKey=key2).annotate(roomName=F('name')).values('roomName'))
+
+            data = list(name + room)
+
+            result = {'resultData': data}
+
+            return JsonResponse(result, status=200)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)

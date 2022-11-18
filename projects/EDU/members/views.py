@@ -212,13 +212,13 @@ def get_student_list(request):
             # 강의키에 맞는 학생 리스트 정렬
             student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
             # 학생 리스트 생성 : 검색 기능 포함
-            student_info = list(Student.objects.filter(studentKey__in=student).filter(
+            data = list(Student.objects.filter(studentKey__in=student).filter(
                 Q(name__icontains=request.data['search']) |
                 Q(school__icontains=request.data['search']) |
                 Q(grade__icontains=request.data['search'])
             ).values())
 
-            result = {'resultData': student_info, 'count': len(student_info)}
+            result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
