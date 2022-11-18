@@ -197,8 +197,6 @@ def get_lecture_list(request):
                 Q(day__icontains=request.data['search'])
             ).values())
 
-            print('lecture>>>', lecture)
-
             result = {'resultData': lecture, 'count': len(lecture)}
 
             return JsonResponse(result, status=200)
