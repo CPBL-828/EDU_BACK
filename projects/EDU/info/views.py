@@ -188,7 +188,7 @@ def get_consult_list(request):
             data = list(Consult.objects.filter(targetKey=key).
                         filter(studentKey=request.data['studentKey']).values())
 
-            result = {'result': data, 'count': len(data)}
+            result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
