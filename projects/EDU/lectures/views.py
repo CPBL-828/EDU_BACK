@@ -195,7 +195,9 @@ def get_lecture_list(request):
                 Q(subject__icontains=request.data['search']) |
                 Q(target__icontains=request.data['search']) |
                 Q(day__icontains=request.data['search'])
-            ).values('name'))
+            ).values())
+
+            print('lecture>>>', lecture)
 
             result = {'resultData': lecture, 'count': len(lecture)}
 
