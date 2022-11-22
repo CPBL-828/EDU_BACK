@@ -17,6 +17,7 @@ urlpatterns = [
    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
    path('compare/', views.compare),
    path('getStudentList/', views.get_student_list),
+   path('createStudent/', views.create_student),
    path('getTeacherList/', views.get_teacher_list),
    path('', include(router.urls)),
 ]

@@ -1,12 +1,13 @@
 from django.shortcuts import render
 # serializer 및 drf 사용
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 # Serializer 불러오기
 from django.core import serializers
 from . import serializers
-from .serializers import *
+from info.serializers import *
 # 모델 불러오기
 from .models import *
 from members.models import *
@@ -18,6 +19,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
+# 시간 관련 기능
+import datetime
 
 
 # 공지 사항 모델 생성
@@ -98,7 +101,7 @@ class ConsultViewSet(viewsets.ModelViewSet):
     serializer_class = ConsultSerializer
 
 
-consult_list = ConsultViewSet.as_view({
+consult_crud = ConsultViewSet.as_view({
     'get': 'list',
     'post': 'create',
 })
@@ -186,7 +189,9 @@ def get_consult_list(request):
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 유저키에 맞는 상담 리스트 정렬
             data = list(Consult.objects.filter(targetKey=key).
-                        filter(studentKey=request.data['studentKey']).values())
+                        filter(studentKey=request.data['studentKey']).
+                        filter(Q(studentName__icontains=request.data['search'])).
+                        filter(Q(consultType__icontains=request.data['search'])).values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -202,6 +207,61 @@ def get_consult_list(request):
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def create_consult(request):
+    try:
+        serializer = ConsultSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_consult(request):
+    try:
+        if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
+
+            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
+
+            consult = Consult.objects.get(consultKey=request.data['consultKey'])
+
+            serializer = ConsultSerializer(consult, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_consult(request):
+    try:
+        if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
+
+            time = Consult.objects.filter(consultKey=request.data['consultKey'])
+            time.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
