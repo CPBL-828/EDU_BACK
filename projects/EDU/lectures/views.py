@@ -243,3 +243,24 @@ def get_lecture_info(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_schedule_list(request):
+    try:
+        if len(request.data["roomKey"]) > 0:
+            # 강의실 키에 맞는 강의키 정렬
+            key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
+            # 정렬한 강의키로 강의 리스트 정렬
+            print('key>>>', key)
+            lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
+
+            result = {'resultData': lecture, 'count': len(lecture)}
+
+            return JsonResponse(result, status=200)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)

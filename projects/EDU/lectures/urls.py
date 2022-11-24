@@ -19,5 +19,6 @@ urlpatterns = [
    path('getLectureRoomList/', views.get_lectureRoom_list),
    path('getLectureList/', views.get_lecture_list),
    path('getLectureInfo/', views.get_lecture_info),
+   path('getScheduleList/', views.get_schedule_list),
    path('', include(router.urls)),
 ]
