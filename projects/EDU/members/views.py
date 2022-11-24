@@ -209,7 +209,7 @@ def get_student_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data["userKey"])
             # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
-            lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('name')
+            lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('lectureName')
             # 강의키에 맞는 학생 리스트 정렬
             student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
             # 학생 리스트 생성 : 검색 기능 포함

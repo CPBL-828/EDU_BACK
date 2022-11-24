@@ -252,7 +252,6 @@ def get_schedule_list(request):
             # 강의실 키에 맞는 강의키 정렬
             key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
             # 정렬한 강의키로 강의 리스트 정렬
-            print('key>>>', key)
             lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
 
             result = {'resultData': lecture, 'count': len(lecture)}
