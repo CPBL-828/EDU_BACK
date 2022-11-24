@@ -18,6 +18,8 @@ urlpatterns = [
    path('compare/', views.compare),
    path('getStudentList/', views.get_student_list),
    path('createStudent/', views.create_student),
+   path('editStudent/', views.edit_student),
+   path('deleteStudent/', views.delete_student),
    path('getTeacherList/', views.get_teacher_list),
    path('', include(router.urls)),
 ]

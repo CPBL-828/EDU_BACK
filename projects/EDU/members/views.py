@@ -18,6 +18,8 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
+# 시간 관련 기능
+import datetime
 
 
 # CUSTOM model 에 대한 view
@@ -248,6 +250,47 @@ def create_student(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_student(request):
+    try:
+        if Student.objects.filter(studentKey=request.data['studentKey']).exists():
+
+            Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
+
+            student = Student.objects.get(consultKey=request.data['studentKey'])
+
+            serializer = StudentSerializer(student, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_student(request):
+    try:
+        if Student.objects.filter(studentKey=request.data['studentKey']).exists():
+
+            student = Student.objects.filter(consultKey=request.data['studentKey'])
+            student.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)

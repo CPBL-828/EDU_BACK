@@ -202,7 +202,9 @@ def get_consult_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key).values())
+            data = list(Consult.objects.filter(targetKey=key).
+                        filter(Q(studentName__icontains=request.data['search'])).
+                        filter(Q(consultType__icontains=request.data['search'])).values())
 
             result = {'resultData': data, 'count': len(data)}
 
