@@ -262,7 +262,7 @@ def edit_student(request):
 
             Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
 
-            student = Student.objects.get(consultKey=request.data['studentKey'])
+            student = Student.objects.get(studentKey=request.data['studentKey'])
 
             serializer = StudentSerializer(student, data=request.data, partial=True)
             if serializer.is_valid():
@@ -285,7 +285,7 @@ def delete_student(request):
     try:
         if Student.objects.filter(studentKey=request.data['studentKey']).exists():
 
-            student = Student.objects.filter(consultKey=request.data['studentKey'])
+            student = Student.objects.filter(studentKey=request.data['studentKey'])
             student.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -309,5 +309,61 @@ def get_teacher_list(request):
         result = {'resultData': data, 'count': len(data)}
 
         return JsonResponse(result, status=200)
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def create_teacher(request):
+    try:
+        serializer = TeacherSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_teacher(request):
+    try:
+        if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
+
+            Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
+
+            teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
+
+            serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_teacher(request):
+    try:
+        if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
+
+            teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+            teacher.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
