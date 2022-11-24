@@ -189,9 +189,10 @@ def get_consult_list(request):
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 유저키에 맞는 상담 리스트 정렬
             data = list(Consult.objects.filter(targetKey=key).
-                        filter(studentKey=request.data['studentKey']).
-                        filter(Q(studentName__icontains=request.data['search'])).
-                        filter(Q(consultType__icontains=request.data['search'])).values())
+                        filter(studentKey=request.data['studentKey']).filter(
+                Q(studentName__icontains=request.data['search']) |
+                Q(consultType__icontains=request.data['search'])
+            ).values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -202,9 +203,13 @@ def get_consult_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key).
-                        filter(Q(studentName__icontains=request.data['search'])).
-                        filter(Q(consultType__icontains=request.data['search'])).values())
+            data = list(Consult.objects.filter(targetKey=key).filter(
+                Q(studentName__icontains=request.data['search']) |
+                Q(consultType__icontains=request.data['search'])
+            ).values())
+
+            print('data>>>', list(Consult.objects.filter(targetKey=key).filter(
+                Q(studentName__icontains=request.data['search'])).values()))
 
             result = {'resultData': data, 'count': len(data)}
 
