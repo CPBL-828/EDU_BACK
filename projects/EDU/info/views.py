@@ -208,9 +208,6 @@ def get_consult_list(request):
                 Q(consultType__icontains=request.data['search'])
             ).values())
 
-            print('data>>>', list(Consult.objects.filter(targetKey=key).filter(
-                Q(studentName__icontains=request.data['search'])).values()))
-
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
