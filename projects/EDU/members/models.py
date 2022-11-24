@@ -15,9 +15,14 @@ class Teacher(models.Model):
     id = models.CharField(max_length=50, null=True, blank=True, unique=True, verbose_name='강사id')
 
     def save(self, *args, **kwargs):
-        self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+        if self.id is None:
+            self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
 
-        super(Teacher, self).save(*args, **kwargs)
+            super(Teacher, self).save(*args, **kwargs)
+
+        else:
+            self.id = self.id
+            super(Teacher, self).save(*args, **kwargs)
 
     phone = models.CharField(max_length=11, verbose_name='연락처')
     email = models.EmailField(max_length=50, verbose_name='이메일')
@@ -53,13 +58,18 @@ class Student(models.Model):
     studentKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                   verbose_name='학생키')
     parentKey = models.ForeignKey('Parent', on_delete=models.CASCADE, db_column='parentKey', verbose_name='부모키')
-    name = models.CharField(max_length=50, verbose_name='학생명')
+    name = models.CharField(max_length=10, verbose_name='학생명')
     id = models.CharField(max_length=50, null=True, blank=True, unique=True, verbose_name='학생id')
 
     def save(self, *args, **kwargs):
-        self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
 
-        super(Student, self).save(*args, **kwargs)
+        if self.id is None:
+            self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+            super(Student, self).save(*args, **kwargs)
+
+        else:
+            self.id = self.id
+            super(Student, self).save(*args, **kwargs)
 
     birth = models.DateField(verbose_name='생년월일')
     sex = models.CharField(max_length=1, verbose_name='성별')
@@ -85,9 +95,14 @@ class Parent(models.Model):
     id = models.CharField(max_length=50, blank=True, null=True, unique=True, verbose_name='부모id')
 
     def save(self, *args, **kwargs):
-        self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+        if self.id is None:
 
-        super(Parent, self).save(*args, **kwargs)
+            self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+            super(Parent, self).save(*args, **kwargs)
+
+        else:
+            self.id = self.id
+            super(Parent, self).save(*args, **kwargs)
 
     phone = models.CharField(max_length=11, verbose_name='연락처')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
