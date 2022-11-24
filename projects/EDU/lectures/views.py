@@ -190,7 +190,7 @@ def get_lecture_list(request):
             key = Teacher.objects.get(teacherKey=request.data["userKey"])
             # 강사키에 맞는 강의 리스트 정렬
             lecture = list(Lecture.objects.filter(teacherKey=key).filter(
-                Q(name__icontains=request.data['search']) |
+                Q(lectureName__icontains=request.data['search']) |
                 Q(type__icontains=request.data['search']) |
                 Q(subject__icontains=request.data['search']) |
                 Q(target__icontains=request.data['search']) |
@@ -203,7 +203,7 @@ def get_lecture_list(request):
 
         else:
             data = list(Lecture.objects.filter(
-                Q(name__icontains=request.data['search']) |
+                Q(lectureName__icontains=request.data['search']) |
                 Q(type__icontains=request.data['search']) |
                 Q(subject__icontains=request.data['search']) |
                 Q(target__icontains=request.data['search']) |
