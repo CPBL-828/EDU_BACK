@@ -217,7 +217,7 @@ def get_consult_list(request):
 
 
 @api_view(['POST'])
-def create_consult(request):
+def create_consult_plan(request):
     try:
         serializer = ConsultSerializer(data=request.data)
         if serializer.is_valid():
@@ -235,7 +235,8 @@ def edit_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
-            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
+            if Consult.objects.filter(content=request.data['content']).exists():
+                Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
 
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
