@@ -231,12 +231,35 @@ def create_consult_plan(request):
 
 
 @api_view(['POST'])
+def create_consult(request):
+    try:
+        if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
+
+            consult = Consult.objects.get(consultKey=request.data['consultKey'])
+
+            serializer = ConsultSerializer(consult, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
 def edit_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
-            if Consult.objects.filter(content=request.data['content']).exists():
-                Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
+            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
 
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
