@@ -300,9 +300,9 @@ def get_analysis_list(request):
     try:
         # userKey, studentKey 있는 지 확인
         if len(request.data['userKey']) > 0:
-            key = Teacher.objects.get(teacherKey=request.data['userKey'])
+            key = Student.objects.get(studentKey=request.data['userKey'])
 
-            data = list(Analysis.objects.filter(writerKey=key).values())
+            data = list(Analysis.objects.filter(studentKey=key).values())
 
             result = {'resultData': data, 'count': len(data)}
 
