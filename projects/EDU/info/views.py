@@ -284,8 +284,80 @@ def delete_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
-            time = Consult.objects.filter(consultKey=request.data['consultKey'])
-            time.delete()
+            consult = Consult.objects.filter(consultKey=request.data['consultKey'])
+            consult.delete()
+
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_analysis_list(request):
+    try:
+        # userKey, studentKey 있는 지 확인
+        if len(request.data['userKey']) > 0:
+            key = Teacher.objects.get(teacherKey=request.data['userKey'])
+
+            data = list(Analysis.objects.filter(writerKey=key).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def create_analysis(request):
+    try:
+        serializer = AnalysisSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_analysis(request):
+    try:
+        if Analysis.objects.filter(analysisKey=request.data['analysisKey']).exists():
+
+            Analysis.objects.filter(analysisKey=request.data['analysisKey']).update(editDate=datetime.datetime.now())
+
+            analysis = Analysis.objects.get(analysisKey=request.data['analysisKey'])
+
+            serializer = ConsultSerializer(analysis, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_analysis(request):
+    try:
+        if Analysis.objects.filter(analysisKey=request.data['analysisKey']).exists():
+
+            analysis = Consult.objects.filter(analysisKey=request.data['analysisKey'])
+            analysis.delete()
 
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:

@@ -80,6 +80,7 @@ class Consult(models.Model):
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey', verbose_name='학생키')
     studentName = models.CharField(max_length=10, verbose_name='학생명')
     targetKey = models.CharField(max_length=50, verbose_name='상담담당')
+    targetName = models.CharField(max_length=10, verbose_name='담당이름')
     consultDate = models.DateTimeField(verbose_name='상담날짜')
     consultType = models.CharField(max_length=10, verbose_name='상담유형')
     content = models.TextField(blank=True, verbose_name='상담내용')
