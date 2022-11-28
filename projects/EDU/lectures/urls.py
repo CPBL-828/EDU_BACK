@@ -12,7 +12,7 @@ router.register(r'assign', views.AssignViewSet, basename='assign')
 router.register(r'test', views.TestViewSet, basename='test')
 router.register(r'testStatus', views.TestStatusViewSet, basename='testStatus')
 router.register(r'record', views.RecordViewSet, basename='record')
-router.register(r'planner', views.TestViewSet, basename='planner')
+router.register(r'planner', views.PlannerViewSet, basename='planner')
 
 
 urlpatterns = [
@@ -20,5 +20,6 @@ urlpatterns = [
    path('getLectureList/', views.get_lecture_list),
    path('getLectureInfo/', views.get_lecture_info),
    path('createLecture/', views.create_lecture),
+   path('createPlanner/', views.create_planner),
    path('', include(router.urls)),
 ]
