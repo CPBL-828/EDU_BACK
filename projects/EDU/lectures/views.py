@@ -1,6 +1,7 @@
 from django.shortcuts import render
 # serializer 및 drf 사용
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 # Serializer 불러오기
@@ -169,7 +170,7 @@ planner_detail = PlannerViewSet.as_view({
 
 # 강의실 검색 및 반환
 @api_view(['POST'])
-def get_lectureRoom_list(request):
+def get_room_list(request):
     data = list(LectureRoom.objects.filter(
         Q(name__icontains=request.data['search']) |
         Q(type__icontains=request.data['search'])
@@ -186,21 +187,53 @@ def get_lecture_list(request):
     try:
         # userKey 있는 지 확인
         if len(request.data["userKey"]) > 0:
-            # 받은 userKey와 teacherKey와 매칭
-            key = Teacher.objects.get(teacherKey=request.data["userKey"])
-            # 강사키에 맞는 강의 리스트 정렬
-            lecture = list(Lecture.objects.filter(teacherKey=key).filter(
-                Q(lectureName__icontains=request.data['search']) |
-                Q(type__icontains=request.data['search']) |
-                Q(subject__icontains=request.data['search']) |
-                Q(target__icontains=request.data['search']) |
-                Q(day__icontains=request.data['search'])
-            ).values())
 
-            result = {'resultData': lecture, 'count': len(lecture)}
+            if len(request.data["userKey"]) > 0 and len(request.data['roomKey']) == 0:
+                # 받은 userKey와 teacherKey와 매칭
+                try:
+                    if Teacher.objects.filter(teacherKey=request.data['userKey']).exists():
+                        key = Teacher.objects.get(teacherKey=request.data["userKey"])
+                        # 강사키에 맞는 강의 리스트 정렬
+                        lecture = list(Lecture.objects.filter(teacherKey=key).filter(
+                            Q(lectureName__icontains=request.data['search']) |
+                            Q(type__icontains=request.data['search']) |
+                            Q(subject__icontains=request.data['search']) |
+                            Q(target__icontains=request.data['search']) |
+                            Q(day__icontains=request.data['search'])
+                        ).values())
 
-            return JsonResponse(result, status=200)
+                        result = {'resultData': lecture, 'count': len(lecture)}
 
+                        return JsonResponse(result, status=200)
+
+                    else:
+                        return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+
+                except KeyError:
+                    return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+            # 강의실 키가 있으면 강의실에 맞는 강의 리스트 반환
+            elif len(request.data["userKey"]) > 0 and len(request.data['roomKey']) > 0:
+                try:
+                    if Lecture.objects.filter(roomKey=request.data['roomKey']).exists():
+                        # 강의실 키에 맞는 강의키 정렬
+                        key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
+                        # 정렬한 강의키로 강의 리스트 정렬
+                        lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
+
+                        result = {'resultData': lecture, 'count': len(lecture)}
+
+                        return JsonResponse(result, status=200)
+
+                    else:
+                        return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+
+                except KeyError:
+                    return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+            else:
+
+                return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
         else:
             data = list(Lecture.objects.filter(
                 Q(lectureName__icontains=request.data['search']) |
@@ -218,6 +251,7 @@ def get_lecture_list(request):
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
+# 강의 정보 반환 : 강사 이름 & 강의실 이름
 @api_view(['POST'])
 def get_lecture_info(request):
     try:
@@ -246,20 +280,14 @@ def get_lecture_info(request):
 
 
 @api_view(['POST'])
-def get_schedule_list(request):
+def create_lecture(request):
     try:
-        if len(request.data["roomKey"]) > 0:
-            # 강의실 키에 맞는 강의키 정렬
-            key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
-            # 정렬한 강의키로 강의 리스트 정렬
-            lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
-
-            result = {'resultData': lecture, 'count': len(lecture)}
-
-            return JsonResponse(result, status=200)
-
+        serializer = LectureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     except KeyError:
-        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
