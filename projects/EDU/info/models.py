@@ -64,6 +64,7 @@ class Suggest(models.Model):
     adminKey = models.ForeignKey('members.Admin', null=True,  on_delete=models.CASCADE, db_column='adminKey', verbose_name='관리자키')
     writerKey = models.CharField(max_length=50, verbose_name='작성자')
     writerName = models.CharField(max_length=10, verbose_name='작성자이름')
+    writerType = models.CharField(max_length=10, verbose_name='작성자유형')
     type = models.CharField(max_length=10, verbose_name='건의유형')
     state = models.CharField(max_length=1, verbose_name='처리여부')
     content = models.TextField(verbose_name='건의내용')

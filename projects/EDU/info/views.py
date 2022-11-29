@@ -168,13 +168,41 @@ def get_notice_list(request):
 @api_view(['POST'])
 def get_suggest_list(request):
     try:
-        data = list(Suggest.objects.filter(
-            state__icontains=request.data['search']).values())
+        if request.data['userType'] == 'ADM':
+            if request.data['writerType'] == 'STU':
+                data = list(Suggest.objects.filter(writerType='STU').values())
 
-        result = {'resultData': data, 'count': len(data)}
+                result = {'resultData': data, 'count': len(data)}
 
-        return JsonResponse(result, status=200)
+                return JsonResponse(result, status=200)
 
+            elif request.data['writerType'] == 'TEA':
+                data = list(Suggest.objects.filter(writerType='TEA').values())
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
+
+            elif request.data['writerType'] == 'PAR':
+                data = list(Suggest.objects.filter(writerType='PAR').values())
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
+        else:
+            try:
+                if Suggest.objects.filter(request.data['userKey']).exists():
+                    data = list(Suggest.objects.filter(writerKey=request.data['userKey']).values())
+
+                    result = {'resultData': data, 'count': len(data)}
+
+                    return JsonResponse(result, status=200)
+
+                else:
+                    return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
