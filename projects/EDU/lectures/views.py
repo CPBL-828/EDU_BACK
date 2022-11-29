@@ -181,6 +181,20 @@ def get_room_list(request):
     return JsonResponse(result, status=200)
 
 
+@api_view(['POST'])
+def create_room(request):
+    try:
+        serializer = LectureRoomSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
 # 강의 목록 검색 및 반환
 @api_view(['POST'])
 def get_lecture_list(request):
@@ -195,12 +209,10 @@ def get_lecture_list(request):
                         key = Teacher.objects.get(teacherKey=request.data["userKey"])
                         # 강사키에 맞는 강의 리스트 정렬
                         lecture = list(Lecture.objects.filter(teacherKey=key).filter(
-                            Q(lectureName__icontains=request.data['search']) |
-                            Q(type__icontains=request.data['search']) |
-                            Q(subject__icontains=request.data['search']) |
-                            Q(target__icontains=request.data['search']) |
-                            Q(day__icontains=request.data['search'])
-                        ).values())
+                            Q(lectureName__icontains=request.data['lectureName']) &
+                            Q(roomName__icontains=request.data['roomName']) &
+                            Q(target__icontains=request.data['target']))
+                            .values())
 
                         result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -236,12 +248,10 @@ def get_lecture_list(request):
                 return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
         else:
             data = list(Lecture.objects.filter(
-                Q(lectureName__icontains=request.data['search']) |
-                Q(type__icontains=request.data['search']) |
-                Q(subject__icontains=request.data['search']) |
-                Q(target__icontains=request.data['search']) |
-                Q(day__icontains=request.data['search'])
-            ).values())
+                Q(lectureName__icontains=request.data['lectureName']) &
+                Q(roomName__icontains=request.data['roomName']) &
+                Q(target__icontains=request.data['target']))
+                .values())
 
             result = {'resultData': data, 'count': len(data)}
 

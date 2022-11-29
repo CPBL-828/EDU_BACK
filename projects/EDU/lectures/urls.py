@@ -17,6 +17,7 @@ router.register(r'planner', views.PlannerViewSet, basename='planner')
 
 urlpatterns = [
    path('getRoomList/', views.get_room_list),
+   path('createRoom/', views.create_room),
    path('getLectureList/', views.get_lecture_list),
    path('getLectureInfo/', views.get_lecture_info),
    path('createLecture/', views.create_lecture),
