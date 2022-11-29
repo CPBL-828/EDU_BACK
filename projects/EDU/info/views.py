@@ -191,7 +191,7 @@ def get_suggest_list(request):
                 return JsonResponse(result, status=200)
         else:
             try:
-                if Suggest.objects.filter(request.data['userKey']).exists():
+                if Suggest.objects.filter(writerKey=request.data['userKey']).exists():
                     data = list(Suggest.objects.filter(writerKey=request.data['userKey']).values())
 
                     result = {'resultData': data, 'count': len(data)}
