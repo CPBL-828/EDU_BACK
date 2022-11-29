@@ -190,19 +190,12 @@ def get_suggest_list(request):
 
                 return JsonResponse(result, status=200)
         else:
-            try:
-                if Suggest.objects.filter(writerKey=request.data['userKey']).exists():
-                    data = list(Suggest.objects.filter(writerKey=request.data['userKey']).values())
+            data = list(Suggest.objects.filter(writerKey=request.data['userKey']).values())
 
-                    result = {'resultData': data, 'count': len(data)}
+            result = {'resultData': data, 'count': len(data)}
 
-                    return JsonResponse(result, status=200)
+            return JsonResponse(result, status=200)
 
-                else:
-                    return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
-
-            except KeyError:
-                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
