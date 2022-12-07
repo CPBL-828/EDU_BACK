@@ -74,6 +74,7 @@ class Student(models.Model):
     birth = models.DateField(verbose_name='생년월일')
     sex = models.CharField(max_length=1, verbose_name='성별')
     phone = models.CharField(max_length=11, verbose_name='연락처')
+    emergency = models.CharField(max_length=11, verbose_name='비상연락망')
     school = models.CharField(max_length=10, verbose_name='학교명')
     grade = models.CharField(max_length=10, verbose_name='학년')
     address = models.CharField(max_length=50, verbose_name='주소')
