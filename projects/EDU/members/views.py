@@ -207,34 +207,64 @@ def compare(request):
 def get_student_list(request):
     try:
         # userKey 있는 지 확인
-        if len(request.data["userKey"]) > 0:
-            # 받은 userKey와 teacherKey와 매칭
-            key = Teacher.objects.get(teacherKey=request.data["userKey"])
-            # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
-            lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('lectureName')
-            # 강의키에 맞는 학생 리스트 정렬
-            student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
-            # 학생 리스트 생성 : 검색 기능 포함
-            data = list(Student.objects.filter(studentKey__in=student).filter(
-                Q(name__icontains=request.data['search']) |
-                Q(school__icontains=request.data['search']) |
-                Q(grade__icontains=request.data['search'])
-            ).values())
+        if len(request.data["userKey"]) > 0 and len(request.data['lectureKey']) == 0:
 
-            result = {'resultData': data, 'count': len(data)}
+            try:
+                if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
+                    # 받은 userKey와 teacherKey와 매칭
+                    key = Teacher.objects.get(teacherKey=request.data["userKey"])
+                    # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
+                    lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('lectureName')
+                    # 강의키에 맞는 학생 리스트 정렬
+                    student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
+                    # 학생 리스트 생성 : 검색 기능 포함
+                    data = list(Student.objects.filter(studentKey__in=student).filter(
+                        Q(name__icontains=request.data['search']) |
+                        Q(school__icontains=request.data['search']) |
+                        Q(grade__icontains=request.data['search'])
+                    ).values())
 
-            return JsonResponse(result, status=200)
+                    result = {'resultData': data, 'count': len(data)}
 
-        else:
-            data = list(Student.objects.filter(
-                Q(name__icontains=request.data['search']) |
-                Q(school__icontains=request.data['search']) |
-                Q(grade__icontains=request.data['search'])
-            ).values())
+                    return JsonResponse(result, status=200)
 
-            result = {'resultData': data, 'count': len(data)}
+                else:
+                    data = list(Student.objects.filter(
+                        Q(name__icontains=request.data['search']) |
+                        Q(school__icontains=request.data['search']) |
+                        Q(grade__icontains=request.data['search'])
+                    ).values())
 
-            return JsonResponse(result, status=200)
+                    result = {'resultData': data, 'count': len(data)}
+
+                    return JsonResponse(result, status=200)
+
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+        elif len(request.data["userKey"]) > 0 and len(request.data['lectureKey']) > 0:
+
+            try:
+                if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
+                    # 받은 userKey와 teacherKey와 매칭
+                    key = Teacher.objects.get(teacherKey=request.data["userKey"])
+                    student = LectureStatus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
+
+                    data = list(Student.objects.filter(studentKey__in=student).filter(
+                        Q(name__icontains=request.data['search']) |
+                        Q(school__icontains=request.data['search']) |
+                        Q(grade__icontains=request.data['search'])
+                    ).values())
+
+                    result = {'resultData': data, 'count': len(data)}
+
+                    return JsonResponse(result, status=200)
+
+                else:
+                    return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
