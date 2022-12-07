@@ -23,5 +23,6 @@ urlpatterns = [
     path('createAnalysis/', views.create_analysis),
     path('editAnalysis/', views.create_analysis),
     path('deleteAnalysis/', views.create_analysis),
+    path('getAttendList/', views.get_attend_list),
     path('', include(router.urls)),
 ]

@@ -151,7 +151,7 @@ def get_notice_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            data = list(Notice.objects.filter(type='전체').filter(
+            data = list(Notice.objects.all().filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
             ).values())
@@ -347,7 +347,7 @@ def create_analysis(request):
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -393,3 +393,43 @@ def delete_analysis(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_attend_list(request):
+    try:
+        if len(request.data['lectureKey']) > 0:
+            if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+
+                attend = Attend.objects.filter(lectureKey=request.data['lectureKey']).values()
+
+                data = list(attend)
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
+
+            else:
+                return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+# @api_view(['POST'])
+# def create_attend_list(request):
+#     try:
+#         serializer = AttendSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#
+#             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+#             return JsonResponse(result, status=201)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     except KeyError:
+#         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
