@@ -247,7 +247,7 @@ def create_student(request):
         if serializer.is_valid():
             serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -268,7 +268,8 @@ def edit_student(request):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                result = {'resultData': serializer.data}
+                return JsonResponse(result, status=200)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -290,7 +291,7 @@ def delete_student(request):
 
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -320,7 +321,7 @@ def create_teacher(request):
         if serializer.is_valid():
             serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -341,7 +342,8 @@ def edit_teacher(request):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                result = {'resultData': serializer.data}
+                return JsonResponse(result, status=200)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

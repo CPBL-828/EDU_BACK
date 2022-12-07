@@ -187,7 +187,8 @@ def create_room(request):
         serializer = LectureRoomSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -295,7 +296,7 @@ def create_lecture(request):
         serializer = LectureSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -309,7 +310,7 @@ def create_planner(request):
         serializer = PlannerSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -243,7 +243,7 @@ def create_consult_plan(request):
         serializer = ConsultSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -263,7 +263,7 @@ def create_consult(request):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -288,7 +288,8 @@ def edit_consult(request):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                result = {'resultData': serializer.data}
+                return JsonResponse(result, status=200)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -339,7 +340,8 @@ def create_analysis(request):
         serializer = AnalysisSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            return JsonResponse({'chunbae': '데이터 생성.'}, status=201)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -360,7 +362,8 @@ def edit_analysis(request):
             if serializer.is_valid():
                 serializer.save()
 
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                result = {'resultData': serializer.data}
+                return JsonResponse(result, status=200)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
