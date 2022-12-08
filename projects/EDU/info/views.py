@@ -400,7 +400,7 @@ def get_attend_list(request):
     try:
         if len(request.data['userKey']) > 0 and len(request.data['lectureKey']) > 0:
             try:
-                if Student.objects.filter(usekKey=request.data['userKey']).exists():
+                if Student.objects.filter(userKey=request.data['userKey']).exists():
 
                     attend = Attend.objects.filter(studentKey=request.data['userKey']).values()
 
