@@ -398,38 +398,42 @@ def delete_analysis(request):
 @api_view(['POST'])
 def get_attend_list(request):
     try:
-        if len(request.data['lectureKey']) > 0:
-            if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if len(request.data['userKey']) > 0 and len(request.data['lectureKey']) > 0:
+            try:
+                if Student.objects.filter(usekKey=request.data['userKey']).exists():
 
-                attend = Attend.objects.filter(lectureKey=request.data['lectureKey']).values()
+                    attend = Attend.objects.filter(studentKey=request.data['userKey']).values()
 
-                data = list(attend)
+                    data = list(attend)
 
-                result = {'resultData': data, 'count': len(data)}
+                    result = {'resultData': data, 'count': len(data)}
 
-                return JsonResponse(result, status=200)
+                    return JsonResponse(result, status=200)
 
-            else:
-                return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+                else:
+                    return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
-        else:
-            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+        elif len(request.data['userKey']) == 0 and len(request.data['lectureKey']) > 0:
+            try:
+                if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+
+                    attend = Attend.objects.filter(lectureKey=request.data['lectureKey']).values()
+
+                    data = list(attend)
+
+                    result = {'resultData': data, 'count': len(data)}
+
+                    return JsonResponse(result, status=200)
+
+                else:
+                    return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
-
-# @api_view(['POST'])
-# def create_attend_list(request):
-#     try:
-#         serializer = AttendSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#
-#             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-#             return JsonResponse(result, status=201)
-#         else:
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-#
-#     except KeyError:
-#         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
