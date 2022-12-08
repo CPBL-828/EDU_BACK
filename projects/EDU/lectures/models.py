@@ -42,7 +42,7 @@ class Lecture(models.Model):
     startTime = models.CharField(max_length=5, verbose_name='시작시간')
     duration = models.IntegerField(verbose_name='지속시간')
     # suggestDate = models.DateTimeField(auto_now=True, verbose_name='건의일자')
-    progress = models.CharField(max_length=10, verbose_name='진행상태')
+    progress = models.CharField(default='등록 대기 중', max_length=10, verbose_name='진행상태')
     reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')

@@ -214,7 +214,7 @@ def get_lecture_list(request):
                             Q(lectureName__icontains=request.data['lectureName']) &
                             Q(roomName__icontains=request.data['roomName']) &
                             Q(target__icontains=request.data['target']))
-                            .values())
+                                       .values())
 
                         result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -253,7 +253,7 @@ def get_lecture_list(request):
                 Q(lectureName__icontains=request.data['lectureName']) &
                 Q(roomName__icontains=request.data['roomName']) &
                 Q(target__icontains=request.data['target']))
-                .values())
+                        .values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -292,7 +292,7 @@ def get_lecture_info(request):
 
 
 @api_view(['POST'])
-def create_lecture(request):
+def create_lecture_plan(request):
     try:
         serializer = LectureSerializer(data=request.data)
         if serializer.is_valid():
@@ -305,6 +305,47 @@ def create_lecture(request):
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def create_lecture_plan(request):
+    try:
+        serializer = LectureSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def create_lecture(request):
+    try:
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+
+            lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+
+            serializer = LectureSerializer(lecture, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+
+                result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
 @api_view(['POST'])
