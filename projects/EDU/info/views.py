@@ -259,6 +259,8 @@ def create_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
+            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
+
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
             serializer = ConsultSerializer(consult, data=request.data, partial=True)
@@ -284,8 +286,6 @@ def create_consult(request):
 def edit_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
-
-            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
 
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
