@@ -280,7 +280,8 @@ def create_student(request):
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -302,7 +303,8 @@ def edit_student(request):
                 result = {'chunbae': '데이터 수정', 'resultData': serializer.data}
                 return JsonResponse(result, status=200)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
         else:
 
@@ -355,7 +357,8 @@ def create_teacher(request):
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -377,7 +380,8 @@ def edit_teacher(request):
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
         else:
 

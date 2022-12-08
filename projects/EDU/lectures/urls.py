@@ -20,6 +20,7 @@ urlpatterns = [
    path('createRoom/', views.create_room),
    path('getLectureList/', views.get_lecture_list),
    path('getLectureInfo/', views.get_lecture_info),
+   path('createLecturePlan/', views.create_lecture_plan),
    path('createLecture/', views.create_lecture),
    path('createPlanner/', views.create_planner),
    path('', include(router.urls)),

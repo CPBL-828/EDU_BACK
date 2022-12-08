@@ -247,7 +247,8 @@ def create_consult_plan(request):
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -268,7 +269,8 @@ def create_consult(request):
                 result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
         else:
 
@@ -294,7 +296,8 @@ def edit_consult(request):
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
         else:
 
@@ -347,7 +350,8 @@ def create_analysis(request):
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -369,7 +373,8 @@ def edit_analysis(request):
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
         else:
 
@@ -439,3 +444,19 @@ def get_attend_list(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
+
+@api_view(['POST'])
+def create_attend(request):
+    try:
+        serializer = AttendSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)

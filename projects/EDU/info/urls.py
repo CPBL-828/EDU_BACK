@@ -24,5 +24,6 @@ urlpatterns = [
     path('editAnalysis/', views.create_analysis),
     path('deleteAnalysis/', views.create_analysis),
     path('getAttendList/', views.get_attend_list),
+    path('createAttend/', views.create_attend),
     path('', include(router.urls)),
 ]
