@@ -218,7 +218,7 @@ def create_suggest_plan(request):
 
 
 @api_view(['POST'])
-def create_suggest(request):
+def create_suggest_reply(request):
     try:
         if Suggest.objects.filter(consultKey=request.data['suggestKey']).exists():
 

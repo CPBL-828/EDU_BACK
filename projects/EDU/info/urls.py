@@ -15,7 +15,7 @@ urlpatterns = [
     path('getNoticeList/', views.get_notice_list),
     path('getSuggestList/', views.get_suggest_list),
     path('createSuggestPlan/', views.create_suggest_plan),
-    path('createSuggest/', views.create_suggest),
+    path('createSuggestReply/', views.create_suggest_reply),
     path('editSuggest/', views.edit_suggest),
     path('getConsultList/', views.get_consult_list),
     path('createConsultPlan/', views.create_consult_plan),

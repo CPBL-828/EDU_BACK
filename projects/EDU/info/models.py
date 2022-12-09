@@ -61,7 +61,7 @@ class Work(models.Model):
 class Suggest(models.Model):
     suggestKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                   verbose_name='건의키')
-    adminKey = models.ForeignKey('members.Admin', null=True,  on_delete=models.CASCADE, db_column='adminKey', verbose_name='관리자키')
+    adminKey = models.CharField(max_length=50, blank=True, null=True, db_column='adminKey', verbose_name='관리자키')
     writerKey = models.CharField(max_length=50, verbose_name='작성자')
     writerName = models.CharField(max_length=10, verbose_name='작성자이름')
     writerType = models.CharField(max_length=10, verbose_name='작성자유형')
