@@ -234,25 +234,11 @@ def get_lecture_list(request):
                         # 강의실 키에 맞는 강의키 정렬
                         key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
                         # 정렬한 강의키로 강의 리스트 정렬
-                        lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
-
-                        result = {'resultData': lecture, 'count': len(lecture)}
-
-                        return JsonResponse(result, status=200)
-
-                    else:
-                        return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
-
-                except KeyError:
-                    return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
-
-            elif len(request.data["userKey"]) == 0 and len(request.data['roomKey']) > 0:
-                try:
-                    if Lecture.objects.filter(roomKey=request.data['roomKey']).exists():
-                        # 강의실 키에 맞는 강의키 정렬
-                        key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
-                        # 정렬한 강의키로 강의 리스트 정렬
-                        lecture = list(Lecture.objects.filter(lectureKey__in=key).values())
+                        lecture = list(Lecture.objects.filter(lectureKey__in=key).filter(
+                            Q(lectureName__icontains=request.data['lectureName']) &
+                            Q(roomName__icontains=request.data['roomName']) &
+                            Q(target__icontains=request.data['target']))
+                                       .values())
 
                         result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -265,8 +251,30 @@ def get_lecture_list(request):
                     return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
             else:
-
                 return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+
+        elif len(request.data["userKey"]) == 0 and len(request.data['roomKey']) > 0:
+            try:
+                if Lecture.objects.filter(roomKey=request.data['roomKey']).exists():
+                    # 강의실 키에 맞는 강의키 정렬
+                    key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
+                    # 정렬한 강의키로 강의 리스트 정렬
+                    lecture = list(Lecture.objects.filter(lectureKey__in=key).filter(
+                            Q(lectureName__icontains=request.data['lectureName']) &
+                            Q(roomName__icontains=request.data['roomName']) &
+                            Q(target__icontains=request.data['target']))
+                                    .values())
+
+                    result = {'resultData': lecture, 'count': len(lecture)}
+
+                    return JsonResponse(result, status=200)
+
+                else:
+                    return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+
+            except KeyError:
+                return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
         else:
             data = list(Lecture.objects.filter(
                 Q(lectureName__icontains=request.data['lectureName']) &
