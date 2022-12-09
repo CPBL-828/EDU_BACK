@@ -448,7 +448,7 @@ def get_attend_list(request):
 @api_view(['POST'])
 def create_attend(request):
     try:
-        serializer = AttendSerializer(data=request.data)
+        serializer = AttendSerializer(data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
 
