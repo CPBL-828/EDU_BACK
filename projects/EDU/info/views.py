@@ -200,6 +200,23 @@ def get_suggest_list(request):
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
+@api_view(['POST'])
+def create_suggest(request):
+    try:
+        serializer = SuggestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
 # 상담 리스트 필터링 및 반환
 @api_view(['POST'])
 def get_consult_list(request):

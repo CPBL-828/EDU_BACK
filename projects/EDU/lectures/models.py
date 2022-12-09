@@ -14,7 +14,7 @@ from members.models import *
 class LectureRoom(models.Model):
     roomKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                verbose_name='강의실키')
-    name = models.CharField(max_length=10, verbose_name='강의실명')
+    name = models.CharField(max_length=10, unique=True, verbose_name='강의실명')
     type = models.CharField(max_length=10, verbose_name='유형')
     totalPeople = models.IntegerField(verbose_name='총수용인원')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
@@ -30,7 +30,7 @@ class Lecture(models.Model):
                                   verbose_name='강의키')
     roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, db_column='roomKey', verbose_name='강의실키')
     teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey', verbose_name='강사키')
-    adminKey = models.ForeignKey('members.Admin', on_delete=models.CASCADE, db_column='adminKey', verbose_name='관리자키')
+    adminKey = models.CharField(max_length=50, blank=True, null=True, db_column='adminKey', verbose_name='관리자키')
     lectureName = models.CharField(max_length=10, verbose_name='강의명')
     roomName = models.CharField(max_length=10, verbose_name='강의실명')
     teacherName = models.CharField(max_length=10, verbose_name='강사명')
