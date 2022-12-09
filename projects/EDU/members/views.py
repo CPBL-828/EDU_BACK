@@ -336,7 +336,7 @@ def delete_student(request):
             student = Student.objects.filter(studentKey=request.data['studentKey'])
             student.delete()
 
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
@@ -413,9 +413,9 @@ def delete_teacher(request):
             teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
             teacher.delete()
 
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
