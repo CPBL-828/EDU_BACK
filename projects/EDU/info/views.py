@@ -141,7 +141,7 @@ def get_notice_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data["userKey"])
             # 강사키에 맞는 공지 리스트 정렬
-            notice = list(Notice.objects.filter(readerKey=key).filter(
+            notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date']).filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
             ).values())
@@ -151,7 +151,7 @@ def get_notice_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            data = list(Notice.objects.all().filter(
+            data = list(Notice.objects.filter(createDate__icontains=request.data['date']).filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
             ).values())
@@ -418,7 +418,7 @@ def get_analysis_list(request):
         if len(request.data['userKey']) > 0:
             key = Student.objects.get(studentKey=request.data['userKey'])
 
-            data = list(Analysis.objects.filter(studentKey=key).values())
+            data = list(Analysis.objects.filter(studentKey=key, createDate__icontains=request.data['date']).values())
 
             result = {'resultData': data, 'count': len(data)}
 
