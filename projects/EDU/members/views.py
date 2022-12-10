@@ -282,11 +282,14 @@ def get_student_list(request):
 
         elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) == 0:
 
-            student = list(Student.objects.filter(
+            data = list(Student.objects.filter(
                     Q(name__icontains=request.data['search']) |
                     Q(school__icontains=request.data['search']) |
                     Q(grade__icontains=request.data['search'])
                 ).values())
+
+            result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
