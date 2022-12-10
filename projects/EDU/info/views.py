@@ -20,7 +20,7 @@ from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
 # 시간 관련 기능
-import datetime
+from datetime import datetime
 
 
 # 공지 사항 모델 생성
@@ -248,7 +248,7 @@ def edit_suggest(request):
     try:
         if Suggest.objects.filter(suggestKey=request.data['suggestKey']).exists():
 
-            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(editDate=datetime.datetime.now())
+            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(editDate=datetime.now())
 
             suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
@@ -289,16 +289,18 @@ def delete_suggest(request):
 # 상담 리스트 필터링 및 반환
 @api_view(['POST'])
 def get_consult_list(request):
+
     try:
         # userKey, studentKey 있는 지 확인
         if len(request.data['userKey']) > 0 and len(request.data['studentKey']) > 0:
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 유저키에 맞는 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key).
+            data = list(Consult.objects.filter(targetKey=key, consultDate__icontains=request.data['date']).
                         filter(studentKey=request.data['studentKey']).filter(
                 Q(studentName__icontains=request.data['search']) |
-                Q(consultType__icontains=request.data['search'])
+                Q(consultType__icontains=request.data['search']) |
+                Q(consultDate__date=request.data['date'])
             ).values())
 
             result = {'resultData': data, 'count': len(data)}
@@ -310,7 +312,7 @@ def get_consult_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key).filter(
+            data = list(Consult.objects.filter(targetKey=key, consultDate__icontains=request.data['date']).filter(
                 Q(studentName__icontains=request.data['search']) |
                 Q(consultType__icontains=request.data['search'])
             ).values())
@@ -371,7 +373,7 @@ def edit_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
-            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.datetime.now())
+            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.now())
 
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
@@ -448,7 +450,7 @@ def edit_analysis(request):
     try:
         if Analysis.objects.filter(analysisKey=request.data['analysisKey']).exists():
 
-            Analysis.objects.filter(analysisKey=request.data['analysisKey']).update(editDate=datetime.datetime.now())
+            Analysis.objects.filter(analysisKey=request.data['analysisKey']).update(editDate=datetime.now())
 
             analysis = Analysis.objects.get(analysisKey=request.data['analysisKey'])
 
