@@ -249,7 +249,7 @@ def get_lecture_list(request):
 
         elif len(request.data["userKey"]) == 0 and len(request.data['roomKey']) > 0:
             try:
-                if Lecture.objects.filter(roomKey=request.data['roomKey']).exists():
+                if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
                     # 강의실 키에 맞는 강의키 정렬
                     key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
                     # 정렬한 강의키로 강의 리스트 정렬
