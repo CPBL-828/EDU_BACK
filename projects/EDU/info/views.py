@@ -299,8 +299,7 @@ def get_consult_list(request):
             data = list(Consult.objects.filter(targetKey=key, consultDate__icontains=request.data['date']).
                         filter(studentKey=request.data['studentKey']).filter(
                 Q(studentName__icontains=request.data['search']) |
-                Q(consultType__icontains=request.data['search']) |
-                Q(consultDate__date=request.data['date'])
+                Q(consultType__icontains=request.data['search'])
             ).values())
 
             result = {'resultData': data, 'count': len(data)}
