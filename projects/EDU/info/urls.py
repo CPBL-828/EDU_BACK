@@ -13,6 +13,7 @@ router.register(r'analysis', views.AnalysisViewSet, basename='analysis')
 
 urlpatterns = [
     path('getNoticeList/', views.get_notice_list),
+    path('createNotice/', views.create_notice),
     path('getSuggestList/', views.get_suggest_list),
     path('createSuggestPlan/', views.create_suggest_plan),
     path('createSuggestReply/', views.create_suggest_reply),
