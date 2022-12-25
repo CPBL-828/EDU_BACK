@@ -144,7 +144,7 @@ def get_notice_list(request):
             notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date']).filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
-            ).order_by('createDate').values())
+            ).order_by('-createDate').values())
 
             result = {'resultData': notice, 'count': len(notice)}
 
@@ -154,7 +154,7 @@ def get_notice_list(request):
             data = list(Notice.objects.filter(createDate__icontains=request.data['date']).filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
-            ).order_by('createDate').values())
+            ).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
