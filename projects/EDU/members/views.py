@@ -222,7 +222,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).values())
+                    ).order_by('name').values())
 
                     result = {'resultData': data, 'count': len(data)}
 
@@ -233,7 +233,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).values())
+                    ).order_by('name').values())
 
                     result = {'resultData': data, 'count': len(data)}
 
@@ -254,7 +254,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).values())
+                    ).order_by('name').values())
 
                     result = {'resultData': data, 'count': len(data)}
                     return JsonResponse(result, status=200)
@@ -273,7 +273,7 @@ def get_student_list(request):
                     Q(name__icontains=request.data['search']) |
                     Q(school__icontains=request.data['search']) |
                     Q(grade__icontains=request.data['search'])
-                ).values())
+                ).order_by('name').values())
 
                 result = {'resultData': data, 'count': len(data)}
                 return JsonResponse(result, status=200)
@@ -286,7 +286,7 @@ def get_student_list(request):
                     Q(name__icontains=request.data['search']) |
                     Q(school__icontains=request.data['search']) |
                     Q(grade__icontains=request.data['search'])
-                ).values())
+                ).order_by('name').values())
 
             result = {'resultData': data, 'count': len(data)}
             return JsonResponse(result, status=200)
@@ -363,7 +363,7 @@ def get_teacher_list(request):
             Q(name__icontains=request.data['search']) |
             Q(part__icontains=request.data['search']) |
             Q(resSubject__icontains=request.data['search'])
-        ).values())
+        ).order_by('name').values())
 
         result = {'resultData': data, 'count': len(data)}
 
