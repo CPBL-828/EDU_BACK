@@ -309,14 +309,13 @@ def get_consult_list(request):
     try:
         # userKey, studentKey 있는 지 확인
         if len(request.data['userKey']) > 0 and len(request.data['studentKey']) > 0:
-            # 받은 userKey와 teacherKey와 매칭
-            key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 유저키에 맞는 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key, consultDate__icontains=request.data['date']).
-                        filter(studentKey=request.data['studentKey']).filter(
-                Q(studentName__icontains=request.data['search']) |
-                Q(consultType__icontains=request.data['search'])
-            ).values())
+            data = list(
+                Consult.objects.filter(targetKey=request.data['userKey'], consultDate__icontains=request.data['date']).
+                filter(studentKey=request.data['studentKey']).filter(
+                    Q(studentName__icontains=request.data['search']) |
+                    Q(consultType__icontains=request.data['search'])
+                ).values())
 
             result = {'resultData': data, 'count': len(data)}
 
