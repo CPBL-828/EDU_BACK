@@ -323,10 +323,8 @@ def get_consult_list(request):
 
         # 유저키만 있을 때
         elif len(request.data['userKey']) > 0 and len(request.data['studentKey']) == 0:
-            # 받은 userKey와 teacherKey와 매칭
-            key = Teacher.objects.get(teacherKey=request.data['userKey'])
             # 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=key, consultDate__icontains=request.data['date']).filter(
+            data = list(Consult.objects.filter(targetKey=request.data['userKey'], consultDate__icontains=request.data['date']).filter(
                 Q(studentName__icontains=request.data['search']) |
                 Q(consultType__icontains=request.data['search'])
             ).values())
