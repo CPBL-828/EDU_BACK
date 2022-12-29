@@ -187,27 +187,27 @@ def get_suggest_list(request):
     try:
         if request.data['userType'] == 'ADM':
             if request.data['writerType'] == 'STU':
-                data = list(Suggest.objects.filter(writerType='STU').values())
+                data = list(Suggest.objects.filter(writerType='STU').order_by('-createDate').values())
 
                 result = {'resultData': data, 'count': len(data)}
 
                 return JsonResponse(result, status=200)
 
             elif request.data['writerType'] == 'TEA':
-                data = list(Suggest.objects.filter(writerType='TEA').values())
+                data = list(Suggest.objects.filter(writerType='TEA').order_by('-createDate').values())
 
                 result = {'resultData': data, 'count': len(data)}
 
                 return JsonResponse(result, status=200)
 
             elif request.data['writerType'] == 'PAR':
-                data = list(Suggest.objects.filter(writerType='PAR').values())
+                data = list(Suggest.objects.filter(writerType='PAR').order_by('-createDate').values())
 
                 result = {'resultData': data, 'count': len(data)}
 
                 return JsonResponse(result, status=200)
         else:
-            data = list(Suggest.objects.filter(writerKey=request.data['userKey']).values())
+            data = list(Suggest.objects.filter(writerKey=request.data['userKey']).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
