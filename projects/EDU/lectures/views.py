@@ -336,15 +336,10 @@ def create_lecture_plan(request):
 @api_view(['POST'])
 def create_lecture_plan(request):
 
-    colors = {"국어": "#d57a7b", "수학": "#e39177", "영어": "#eeb958", "국사": "#80bdca",
-             "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
-             "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
     try:
         serializer = LectureSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-
-            Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[request.data['subject']])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
@@ -358,6 +353,11 @@ def create_lecture_plan(request):
 
 @api_view(['POST'])
 def create_lecture(request):
+
+    colors = {"국어": "#d57a7b", "수학": "#e39177", "영어": "#eeb958", "국사": "#80bdca",
+              "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
+              "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
+
     try:
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
@@ -367,6 +367,9 @@ def create_lecture(request):
 
             if serializer.is_valid():
                 serializer.save()
+
+                subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=request.data['lectureKey'])
+                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[subject])
 
                 result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)

@@ -36,6 +36,7 @@ class Lecture(models.Model):
     teacherName = models.CharField(max_length=10, verbose_name='강사명')
     type = models.CharField(max_length=10, verbose_name='강의유형')
     subject = models.CharField(max_length=10, verbose_name='과목')
+    color = models.CharField(max_length=10, blank=True, null=True, verbose_name='과목색상')
     book = models.CharField(max_length=50, verbose_name='주교재')
     target = models.CharField(max_length=10, verbose_name='대상학년')
     day = models.IntegerField(verbose_name='요일')
