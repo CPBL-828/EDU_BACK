@@ -241,16 +241,14 @@ def create_suggest_reply(request):
 
             suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
-            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(adminKey=request.data['adminKey'])
-            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(state='Y')
-            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(answerDate=datetime.now())
-
-            data = Suggest.objects.filter(suggestKey=request.data['suggestKey']).values()
-
-            serializer = SuggestSerializer(suggest, data, partial=True)
+            serializer = SuggestSerializer(suggest, request.data, partial=True)
 
             if serializer.is_valid():
                 serializer.save()
+
+                Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(adminKey=request.data['adminKey'])
+                Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(state='Y')
+                Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(answerDate=datetime.now())
 
                 result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
