@@ -269,13 +269,13 @@ def edit_suggest(request):
     try:
         if Suggest.objects.filter(suggestKey=request.data['suggestKey']).exists():
 
-            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(editDate=datetime.now())
-
             suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
             serializer = SuggestSerializer(suggest, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(editDate=datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -390,13 +390,13 @@ def edit_consult(request):
     try:
         if Consult.objects.filter(consultKey=request.data['consultKey']).exists():
 
-            Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.now())
-
             consult = Consult.objects.get(consultKey=request.data['consultKey'])
 
             serializer = ConsultSerializer(consult, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                Consult.objects.filter(consultKey=request.data['consultKey']).update(editDate=datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -467,13 +467,13 @@ def edit_analysis(request):
     try:
         if Analysis.objects.filter(analysisKey=request.data['analysisKey']).exists():
 
-            Analysis.objects.filter(analysisKey=request.data['analysisKey']).update(editDate=datetime.now())
-
             analysis = Analysis.objects.get(analysisKey=request.data['analysisKey'])
 
             serializer = ConsultSerializer(analysis, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                Analysis.objects.filter(analysisKey=request.data['analysisKey']).update(editDate=datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)

@@ -317,13 +317,13 @@ def edit_student(request):
     try:
         if Student.objects.filter(studentKey=request.data['studentKey']).exists():
 
-            Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
-
             student = Student.objects.get(studentKey=request.data['studentKey'])
 
             serializer = StudentSerializer(student, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정', 'resultData': serializer.data}
                 return JsonResponse(result, status=200)
@@ -394,13 +394,13 @@ def edit_teacher(request):
     try:
         if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
 
-            Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
-
             teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
 
             serializer = TeacherSerializer(teacher, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
+
+                Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
