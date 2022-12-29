@@ -254,10 +254,10 @@ def get_lecture_list(request):
                     key = Lecture.objects.filter(roomKey=request.data['roomKey']).values('lectureKey')
                     # 정렬한 강의키로 강의 리스트 정렬
                     lecture = list(Lecture.objects.filter(lectureKey__in=key).filter(
-                            Q(lectureName__icontains=request.data['lectureName']) &
-                            Q(roomName__icontains=request.data['roomName']) &
-                            Q(target__icontains=request.data['target']))
-                                    .values())
+                        Q(lectureName__icontains=request.data['lectureName']) &
+                        Q(roomName__icontains=request.data['roomName']) &
+                        Q(target__icontains=request.data['target']))
+                                   .values())
 
                     result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -335,10 +335,16 @@ def create_lecture_plan(request):
 
 @api_view(['POST'])
 def create_lecture_plan(request):
+
+    colors = {"국어": "#d57a7b", "수학": "#e39177", "영어": "#eeb958", "국사": "#80bdca",
+             "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
+             "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
     try:
         serializer = LectureSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
+
+            Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[request.data['subject']])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
