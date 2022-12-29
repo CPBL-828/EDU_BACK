@@ -239,7 +239,7 @@ def create_suggest_reply(request):
     try:
         if Suggest.objects.filter(suggestKey=request.data['suggestKey']).exists():
 
-            suggest = Consult.objects.get(suggestKey=request.data['suggestKey'])
+            suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
             serializer = SuggestSerializer(suggest, data=request.data, partial=True)
 
