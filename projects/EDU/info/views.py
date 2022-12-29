@@ -241,6 +241,9 @@ def create_suggest_reply(request):
 
             suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
+            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(answerDate=datetime.now())
+            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(state='Y')
+
             serializer = SuggestSerializer(suggest, data=request.data, partial=True)
 
             if serializer.is_valid():
