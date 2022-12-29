@@ -241,6 +241,7 @@ def create_suggest_reply(request):
 
             suggest = Suggest.objects.get(suggestKey=request.data['suggestKey'])
 
+            Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(adminKey=request.data['adminKey'])
             Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(answerDate=datetime.now())
             Suggest.objects.filter(suggestKey=request.data['suggestKey']).update(state='Y')
 
