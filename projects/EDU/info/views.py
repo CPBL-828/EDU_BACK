@@ -164,6 +164,23 @@ def get_notice_list(request):
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
+@api_view(['POST'])
+def create_notice(request):
+    try:
+        serializer = NoticeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
 # 건의 사항 리스트 필터링 및 반환
 @api_view(['POST'])
 def get_suggest_list(request):
@@ -201,23 +218,6 @@ def get_suggest_list(request):
 
 
 @api_view(['POST'])
-def create_notice(request):
-    try:
-        serializer = NoticeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
-        else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-            return JsonResponse(result, status=400)
-
-    except KeyError:
-        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
-
-
-@api_view(['POST'])
 def create_suggest_plan(request):
     try:
         serializer = SuggestSerializer(data=request.data)
@@ -237,7 +237,7 @@ def create_suggest_plan(request):
 @api_view(['POST'])
 def create_suggest_reply(request):
     try:
-        if Suggest.objects.filter(consultKey=request.data['suggestKey']).exists():
+        if Suggest.objects.filter(suggestKey=request.data['suggestKey']).exists():
 
             suggest = Consult.objects.get(suggestKey=request.data['suggestKey'])
 
@@ -324,7 +324,8 @@ def get_consult_list(request):
         # 유저키만 있을 때
         elif len(request.data['userKey']) > 0 and len(request.data['studentKey']) == 0:
             # 상담 리스트 정렬
-            data = list(Consult.objects.filter(targetKey=request.data['userKey'], consultDate__icontains=request.data['date']).filter(
+            data = list(Consult.objects.filter(targetKey=request.data['userKey'],
+                                               consultDate__icontains=request.data['date']).filter(
                 Q(studentName__icontains=request.data['search']) |
                 Q(consultType__icontains=request.data['search'])
             ).values())
