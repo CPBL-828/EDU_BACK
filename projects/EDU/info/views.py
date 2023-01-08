@@ -568,6 +568,23 @@ def create_attend(request):
 
 
 @api_view(['POST'])
+def get_work_list(request):
+    try:
+        # userKey, studentKey 있는 지 확인
+        if len(request.data['userKey']) > 0:
+            key = Student.objects.get(studentKey=request.data['userKey'])
+
+            data = list(Analysis.objects.filter(studentKey=key, createDate__icontains=request.data['date']).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
 def create_work(request):
     try:
         serializer = WorkSerializer(data=request.data)
