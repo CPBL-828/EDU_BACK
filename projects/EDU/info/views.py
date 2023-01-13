@@ -140,22 +140,34 @@ def get_notice_list(request):
         if len(request.data["userKey"]) > 0:
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data["userKey"])
-            # 강사키에 맞는 공지 리스트 정렬
-            notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date'],
-                          type__icontains=request.data['type']).filter(
-                Q(title__icontains=request.data['search']) |
-                Q(content__icontains=request.data['search'])
-            ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
+            # 강사키에 맞는 공지 리스트 정렬 (연도 검색이 있을 때 / 없을 때)
+            if len(request.data['date']) == 0:
+                notice = list(Notice.objects.filter(readerKey=key, type__icontains=request.data['type']).filter(
+                    Q(title__icontains=request.data['search']) |
+                    Q(content__icontains=request.data['search'])
+                ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
 
-            result = {'resultData': notice, 'count': len(notice)}
+                result = {'resultData': notice, 'count': len(notice)}
 
-            return JsonResponse(result, status=200)
+                return JsonResponse(result, status=200)
+
+            else:
+                notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date'],
+                                                    type__icontains=request.data['type']).filter(
+                    Q(title__icontains=request.data['search']) |
+                    Q(content__icontains=request.data['search'])
+                ).order_by('-createDate').values())
+
+                result = {'resultData': notice, 'count': len(notice)}
+
+                return JsonResponse(result, status=200)
 
         else:
-            data = list(Notice.objects.filter(createDate__icontains=request.data['date'], type__icontains=request.data['type'])
-                        .filter(Q(title__icontains=request.data['search']) |
-                                Q(content__icontains=request.data['search'])
-                                ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
+            data = list(
+                Notice.objects.filter(createDate__icontains=request.data['date'], type__icontains=request.data['type'])
+                .filter(Q(title__icontains=request.data['search']) |
+                        Q(content__icontains=request.data['search'])
+                        ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
