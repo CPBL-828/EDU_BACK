@@ -141,7 +141,8 @@ def get_notice_list(request):
             # 받은 userKey와 teacherKey와 매칭
             key = Teacher.objects.get(teacherKey=request.data["userKey"])
             # 강사키에 맞는 공지 리스트 정렬
-            notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date']).filter(
+            notice = list(Notice.objects.filter(readerKey=key, createDate__icontains=request.data['date'],
+                                                type=request.data['type']).filter(
                 Q(title__icontains=request.data['search']) |
                 Q(content__icontains=request.data['search'])
             ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
@@ -151,10 +152,10 @@ def get_notice_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            data = list(Notice.objects.filter(createDate__icontains=request.data['date']).filter(
-                Q(title__icontains=request.data['search']) |
-                Q(content__icontains=request.data['search'])
-            ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
+            data = list(Notice.objects.filter(createDate__icontains=request.data['date'], type=request.data['type'])
+                        .filter(Q(title__icontains=request.data['search']) |
+                                Q(content__icontains=request.data['search'])
+                                ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
