@@ -163,15 +163,28 @@ def get_notice_list(request):
                 return JsonResponse(result, status=200)
 
         else:
-            data = list(
-                Notice.objects.filter(createDate__icontains=request.data['date'], type__icontains=request.data['type'])
-                .filter(Q(title__icontains=request.data['search']) |
-                        Q(content__icontains=request.data['search'])
-                        ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
+            if len(request.data['date']) == 0:
+                data = list(
+                    Notice.objects.filter(type__icontains=request.data['type'])
+                    .filter(Q(title__icontains=request.data['search']) |
+                            Q(content__icontains=request.data['search'])
+                            ).filter(createDate__year=datetime.now().year).order_by('-createDate').values())
 
-            result = {'resultData': data, 'count': len(data)}
+                result = {'resultData': data, 'count': len(data)}
 
-            return JsonResponse(result, status=200)
+                return JsonResponse(result, status=200)
+
+            else:
+                data = list(
+                    Notice.objects.filter(createDate__icontains=request.data['date'],
+                                          type__icontains=request.data['type'])
+                    .filter(Q(title__icontains=request.data['search']) |
+                            Q(content__icontains=request.data['search'])
+                            ).order_by('-createDate').values())
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
