@@ -318,7 +318,6 @@ def get_consult_list(request):
             data = list(
                 Consult.objects.filter(targetKey=request.data['userKey'], consultDate__icontains=request.data['date']).
                 filter(studentKey=request.data['studentKey']).filter(
-                    Q(studentName__icontains=request.data['search']) |
                     Q(consultType__icontains=request.data['search'])
                 ).values())
 
@@ -331,7 +330,6 @@ def get_consult_list(request):
             # 상담 리스트 정렬
             data = list(Consult.objects.filter(targetKey=request.data['userKey'],
                                                consultDate__icontains=request.data['date']).filter(
-                Q(studentName__icontains=request.data['search']) |
                 Q(consultType__icontains=request.data['search'])
             ).values())
 
