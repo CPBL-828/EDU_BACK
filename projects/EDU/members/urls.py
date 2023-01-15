@@ -24,5 +24,9 @@ urlpatterns = [
    path('createTeacher/', views.create_teacher),
    path('editTeacher/', views.edit_teacher),
    path('deleteTeacher/', views.delete_teacher),
+   path('getParentList/', views.get_parent_list),
+   path('createParent/', views.create_parent),
+   path('editParent/', views.edit_parent),
+   path('deleteParent/', views.delete_parent),
    path('', include(router.urls)),
 ]

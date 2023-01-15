@@ -283,10 +283,10 @@ def get_student_list(request):
         elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) == 0:
 
             data = list(Student.objects.filter(
-                    Q(name__icontains=request.data['search']) |
-                    Q(school__icontains=request.data['search']) |
-                    Q(grade__icontains=request.data['search'])
-                ).order_by('name').values())
+                Q(name__icontains=request.data['search']) |
+                Q(school__icontains=request.data['search']) |
+                Q(grade__icontains=request.data['search'])
+            ).order_by('name').values())
 
             result = {'resultData': data, 'count': len(data)}
             return JsonResponse(result, status=200)
@@ -423,6 +423,80 @@ def delete_teacher(request):
 
             teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
             teacher.delete()
+
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+        else:
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_parent_list(request):
+    try:
+        data = list(Parent.objects.filter(
+            Q(name__icontains=request.data['search'])
+        ).order_by('name').values())
+
+        result = {'resultData': data, 'count': len(data)}
+
+        return JsonResponse(result, status=200)
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def create_parent(request):
+    try:
+        serializer = ParentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_parent(request):
+    try:
+        if Parent.objects.filter(parentKey=request.data['parentKey']).exists():
+
+            parent = Parent.objects.get(parentKey=request.data['parentKey'])
+
+            serializer = ParentSerializer(parent, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                Parent.objects.filter(parentKey=request.data['parentKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_parent(request):
+    try:
+        if Parent.objects.filter(parentKey=request.data['parentKey']).exists():
+
+            parent = Parent.objects.filter(parentKey=request.data['parentKey'])
+            parent.delete()
 
             return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
         else:
