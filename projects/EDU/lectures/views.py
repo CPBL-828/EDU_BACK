@@ -447,9 +447,7 @@ def create_planner(request):
 
 @api_view(['POST'])
 def get_assign_list(request):
-    data = list(Assign.objects.filter(
-        Q(name__icontains=request.data['search']) |
-        Q(type__icontains=request.data['search'])
+    data = list(Assign.objects.all(
     ).values())
 
     result = {'resultData': data, 'count': len(data)}
@@ -460,7 +458,7 @@ def get_assign_list(request):
 @api_view(['POST'])
 def create_assign(request):
     try:
-        serializer = LectureRoomSerializer(data=request.data)
+        serializer = AssignSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
 
@@ -477,15 +475,15 @@ def create_assign(request):
 @api_view(['POST'])
 def edit_assign(request):
     try:
-        if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
+        if Assign.objects.filter(assignKey=request.data['assignKey']).exists():
 
-            room = LectureRoom.objects.get(lectureRoomKey=request.data['roomKey'])
+            assign = Assign.objects.get(assignKey=request.data['assignKey'])
 
-            serializer = LectureRoomSerializer(room, data=request.data, partial=True)
+            serializer = AssignSerializer(assign, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
-                LectureRoom.objects.filter(roomKey=request.data['roomKey']).update(editDate=datetime.datetime.now())
+                Assign.objects.filter(assignKey=request.data['assignKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -504,10 +502,81 @@ def edit_assign(request):
 @api_view(['POST'])
 def delete_assign(request):
     try:
-        if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
+        if Assign.objects.filter(assignKey=request.data['assignKey']).exists():
 
-            room = Lecture.objects.filter(roomKey=request.data['roomKey'])
-            room.delete()
+            assign = Assign.objects.filter(assignKey=request.data['assignKey'])
+            assign.delete()
+
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
+        else:
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_test_list(request):
+
+    data = list(Test.objects.filter(type__icontains=request.data['type'], testDate__icontains=request.data['testDate']
+    ).values())
+
+    result = {'resultData': data, 'count': len(data)}
+
+    return JsonResponse(result, status=200)
+
+
+@api_view(['POST'])
+def create_test(request):
+    try:
+        serializer = TestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_test(request):
+    try:
+        if Test.objects.filter(testKey=request.data['testKey']).exists():
+
+            test = Test.objects.get(testKey=request.data['testKey'])
+
+            serializer = TestSerializer(test, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                Test.objects.filter(testKey=request.data['testKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_test(request):
+    try:
+        if Test.objects.filter(testKey=request.data['testKey']).exists():
+
+            test = Test.objects.filter(testKey=request.data['testKey'])
+            test.delete()
 
             return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
