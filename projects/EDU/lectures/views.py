@@ -509,7 +509,7 @@ def delete_room(request):
             room = Lecture.objects.filter(roomKey=request.data['roomKey'])
             room.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
