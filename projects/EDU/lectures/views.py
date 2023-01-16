@@ -22,6 +22,8 @@ from rest_framework.parsers import JSONParser
 from django.db.models import Q
 # 쿼리셋 이름 변경
 from django.db.models import F
+# 시간 관련 기능
+import datetime
 
 
 class LectureRoomViewSet(viewsets.ModelViewSet):
@@ -198,6 +200,49 @@ def create_room(request):
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
+@api_view(['POST'])
+def edit_room(request):
+    try:
+        if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
+
+            room = LectureRoom.objects.get(lectureRoomKey=request.data['roomKey'])
+
+            serializer = LectureRoomSerializer(room, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                LectureRoom.objects.filter(roomKey=request.data['roomKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def delete_room(request):
+    try:
+        if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
+
+            room = Lecture.objects.filter(roomKey=request.data['roomKey'])
+            room.delete()
+
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+        else:
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
 # 강의 목록 검색 및 반환
 @api_view(['POST'])
 def get_lecture_list(request):
@@ -335,7 +380,6 @@ def create_lecture_plan(request):
 
 @api_view(['POST'])
 def create_lecture_plan(request):
-
     try:
         serializer = LectureSerializer(data=request.data)
         if serializer.is_valid():
@@ -353,7 +397,6 @@ def create_lecture_plan(request):
 
 @api_view(['POST'])
 def create_lecture(request):
-
     colors = {"국어": "#d57a7b", "수학": "#e39177", "영어": "#eeb958", "국사": "#80bdca",
               "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
               "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
