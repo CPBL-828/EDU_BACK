@@ -18,6 +18,8 @@ router.register(r'planner', views.PlannerViewSet, basename='planner')
 urlpatterns = [
    path('getRoomList/', views.get_room_list),
    path('createRoom/', views.create_room),
+   path('editRoom/', views.edit_room),
+   path('deleteRoom/', views.delete_room),
    path('getLectureList/', views.get_lecture_list),
    path('getLectureInfo/', views.get_lecture_info),
    path('createLecturePlan/', views.create_lecture_plan),
