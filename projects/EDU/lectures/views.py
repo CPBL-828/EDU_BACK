@@ -458,7 +458,7 @@ def get_assign_list(request):
 
 
 @api_view(['POST'])
-def create_room(request):
+def create_assign(request):
     try:
         serializer = LectureRoomSerializer(data=request.data)
         if serializer.is_valid():
@@ -475,7 +475,7 @@ def create_room(request):
 
 
 @api_view(['POST'])
-def edit_room(request):
+def edit_assign(request):
     try:
         if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
 
@@ -502,7 +502,7 @@ def edit_room(request):
 
 
 @api_view(['POST'])
-def delete_room(request):
+def delete_assign(request):
     try:
         if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
 
