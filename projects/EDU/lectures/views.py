@@ -205,7 +205,7 @@ def edit_room(request):
     try:
         if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
 
-            room = LectureRoom.objects.get(lectureRoomKey=request.data['roomKey'])
+            room = LectureRoom.objects.get(roomKey=request.data['roomKey'])
 
             serializer = LectureRoomSerializer(room, data=request.data, partial=True)
             if serializer.is_valid():
