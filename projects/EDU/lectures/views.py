@@ -232,7 +232,7 @@ def delete_room(request):
     try:
         if LectureRoom.objects.filter(roomKey=request.data['roomKey']).exists():
 
-            room = Lecture.objects.filter(roomKey=request.data['roomKey'])
+            room = LectureRoom.objects.filter(roomKey=request.data['roomKey'])
             room.delete()
 
             return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
