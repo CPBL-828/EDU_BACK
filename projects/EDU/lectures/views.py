@@ -98,6 +98,24 @@ assign_detail = AssignViewSet.as_view({
 })
 
 
+class AssignStatusViewSet(viewsets.ModelViewSet):
+    queryset = AssignStatus.objects.all()
+    serializer_class = AssignStatusSerializer
+
+
+assign_status_list = AssignStatusViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+assign_status_detail = AssignStatusViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
 class TestViewSet(viewsets.ModelViewSet):
     queryset = Test.objects.all()
     serializer_class = TestSerializer
