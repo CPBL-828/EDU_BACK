@@ -9,6 +9,7 @@ router.register(r'lectureRoom', views.LectureRoomViewSet, basename='lectureRoom'
 router.register(r'lecture', views.LectureViewSet, basename='lecture')
 router.register(r'lectureStatus', views.LectureStatusViewSet, basename='lectureStatus')
 router.register(r'assign', views.AssignViewSet, basename='assign')
+router.register(r'assignStatus', views.AssignStatusViewSet, basename='assignStatus')
 router.register(r'test', views.TestViewSet, basename='test')
 router.register(r'testStatus', views.TestStatusViewSet, basename='testStatus')
 router.register(r'record', views.RecordViewSet, basename='record')
