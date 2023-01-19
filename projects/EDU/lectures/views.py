@@ -1,7 +1,7 @@
 from django.shortcuts import render
 # serializer 및 drf 사용
 from rest_framework import viewsets
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 # Serializer 불러오기
@@ -513,21 +513,37 @@ def create_assign(request):
 
 # type = 전체 강의키에 해당하는 애들 저장 / 개별이면 넘어온 학생 리스트 저장
 # 받아야할 값 학생키, 학생이름, 과제키
-@api_view(['POST'])
-def create_assign_status(request):
-    try:
-        serializer = AssignStatusSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+# @api_view(['POST'])
+# def create_assign_status(request):
+#     try:
+#         serializer = AssignStatusSerializer(data=request.data, many=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#
+#             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+#             return JsonResponse(result, status=201)
+#         else:
+#             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+#             return JsonResponse(result, status=400)
+#
+#     except KeyError:
+#         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
+class CreateAssignStatusView(generics.ListCreateAPIView):
+    queryset = AssignStatus.objects.all()
+    serializer_class = AssignStatusSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, many=True)
+
+        if serializer.is_valid():
+            self.perform_create(serializer)
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
             return JsonResponse(result, status=400)
 
-    except KeyError:
-        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
 @api_view(['POST'])
