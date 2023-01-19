@@ -30,6 +30,13 @@ class AssignSerializer(serializers.ModelSerializer):
             '__all__'
 
 
+class AssignStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.AssignStatus
+        fields = \
+            '__all__'
+
+
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Test

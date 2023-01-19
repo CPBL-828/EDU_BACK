@@ -333,6 +333,27 @@ def get_lecture_list(request):
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 
+# 과거 시간표 조회 : 강의 마감일 - 등록일 사이 날짜에 입력값 날짜가 있을 시 반환
+# teacherKey , date
+@api_view(['POST'])
+def get_past_lecture_list(request):
+    try:
+        if Teacher.objects.get(teacherKey=request.data['userKey']).exist():
+            data = list(Teacher.objects.filter(teacherKey=request.data['userKey'],
+                                               startDate__gte=request.data['date'],
+                                               endDate__lte=request.data['data']).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
 # 강의 정보 반환 : 강사 이름 & 강의실 이름
 @api_view(['POST'])
 def get_lecture_info(request):
@@ -472,6 +493,25 @@ def create_assign(request):
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
+# type = 전체 강의키에 해당하는 애들 저장 / 개별이면 넘어온 학생 리스트 저장
+# 받아야할 값 학생키, 학생이름, 과제키
+@api_view(['POST'])
+def create_assign_status(request):
+    try:
+        serializer = AssignStatusSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
 @api_view(['POST'])
 def edit_assign(request):
     try:
@@ -517,9 +557,9 @@ def delete_assign(request):
 
 @api_view(['POST'])
 def get_test_list(request):
-
-    data = list(Test.objects.filter(type__icontains=request.data['type'], testDate__icontains=request.data['testDate']
-    ).values())
+    data = list(Test.objects.filter(lectureKey=request.data['lectureKey'], type__icontains=request.data['type'],
+                                    testDate__icontains=request.data['testDate']
+                                    ).values())
 
     result = {'resultData': data, 'count': len(data)}
 
