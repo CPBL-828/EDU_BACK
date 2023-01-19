@@ -486,7 +486,7 @@ def create_planner(request):
 
 @api_view(['POST'])
 def get_assign_list(request):
-    data = list(Assign.objects.all(
+    data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
     ).values())
 
     result = {'resultData': data, 'count': len(data)}
