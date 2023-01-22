@@ -597,13 +597,32 @@ def delete_assign(request):
 def get_test_list(request):
     try:
         if Test.objects.filter(lectureKey=request.data['lectureKey']).exists():
-            data = list(Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
-                                            testDate__icontains=request.data['testDate']
-                                            ).order_by('-createDate').values())
+            data = list(
+                Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
+                                    testDate__icontains=request.data['testDate']
+                                    ).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def get_test_status_list(request):
+    try:
+        if TestStatus.objects.filter(lectureKey=request.data['lectureKey']).exists():
+            data = list(
+                Test.objects.filter(lectureKey=request.data['lectureKey']).order_by('name').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        else:
+            return JsonResponse({'chunbae': ' 데이터가 존재하지 않습니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)

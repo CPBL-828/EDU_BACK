@@ -32,6 +32,7 @@ urlpatterns = [
     path('editAssign/', views.edit_assign),
     path('deleteAssign/', views.delete_assign),
     path('getTestList/', views.get_test_list),
+    path('getTestStatusList/', views.get_test_status_list),
     path('createTest/', views.create_test),
     path('editTest/', views.edit_test),
     path('deleteTest/', views.delete_test),
