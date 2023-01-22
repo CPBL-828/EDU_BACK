@@ -603,6 +603,8 @@ def get_test_list(request):
 
             result = {'resultData': data, 'count': len(data)}
 
+            return JsonResponse(result, status=200)
+
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
