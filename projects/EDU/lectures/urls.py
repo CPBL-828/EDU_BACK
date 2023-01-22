@@ -31,7 +31,7 @@ urlpatterns = [
     path('createAssignStatus/', views.CreateAssignStatusView.as_view()),
     path('editAssign/', views.edit_assign),
     path('deleteAssign/', views.delete_assign),
-    path('getTesetList/', views.get_test_list),
+    path('getTestList/', views.get_test_list),
     path('createTest/', views.create_test),
     path('editTest/', views.edit_test),
     path('deleteTest/', views.delete_test),
