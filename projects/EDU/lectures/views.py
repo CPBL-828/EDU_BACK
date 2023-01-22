@@ -487,7 +487,7 @@ def create_planner(request):
 @api_view(['POST'])
 def get_assign_list(request):
     data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
-    ).values())
+                                      ).values())
 
     result = {'resultData': data, 'count': len(data)}
 
@@ -543,7 +543,6 @@ class CreateAssignStatusView(generics.ListCreateAPIView):
         else:
             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
             return JsonResponse(result, status=400)
-
 
 
 @api_view(['POST'])
