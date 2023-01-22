@@ -599,7 +599,7 @@ def get_test_list(request):
         if Test.objects.filter(lectureKey=request.data['lectureKey']).exists():
             data = list(Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
                                             testDate__icontains=request.data['testDate']
-                                            ).values())
+                                            ).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
