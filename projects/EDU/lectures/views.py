@@ -615,7 +615,7 @@ def get_test_status_list(request):
     try:
         if TestStatus.objects.filter(testKey=request.data['testKey']).exists():
             data = list(
-                Test.objects.filter(testKey=request.data['testKey']).order_by('studentName').values())
+                TestStatus.objects.filter(testKey=request.data['testKey']).order_by('studentName').values())
 
             result = {'resultData': data, 'count': len(data)}
 
