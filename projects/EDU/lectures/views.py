@@ -613,9 +613,9 @@ def get_test_list(request):
 @api_view(['POST'])
 def get_test_status_list(request):
     try:
-        if TestStatus.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if TestStatus.objects.filter(testKey=request.data['testKey']).exists():
             data = list(
-                Test.objects.filter(lectureKey=request.data['lectureKey']).order_by('name').values())
+                Test.objects.filter(testKey=request.data['testKey']).order_by('name').values())
 
             result = {'resultData': data, 'count': len(data)}
 
