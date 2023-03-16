@@ -34,6 +34,7 @@ urlpatterns = [
     path('getTestList/', views.get_test_list),
     path('getTestStatusList/', views.get_test_status_list),
     path('createTest/', views.create_test),
+    # path('createTestStatus/', views.CreateTestStatusView.as_view()),
     path('editTest/', views.edit_test),
     path('deleteTest/', views.delete_test),
     path('', include(router.urls)),

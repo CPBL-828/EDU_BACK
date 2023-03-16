@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 # Serializer 불러오기
-from django.core import serializers
+from django.core import serializers as core_serializers
 from . import serializers
 from .serializers import *
 # 모델 불러오기
@@ -18,6 +18,7 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 # 장고 모델 검색 기능
 from django.db.models import Q
+from django.db.models import F
 # 시간 관련 기능
 import datetime
 
@@ -96,6 +97,19 @@ parent_detail = AdminViewSet.as_view({
     'delete': 'destroy',
 })
 
+
+@api_view(['POST'])
+def testLinkedData(request):
+    student_data = Student.objects.all()
+    parent_data = Parent.objects.all()
+
+    combined_data = student_data.annotate(
+
+    )
+
+    result = {'student': student_data, 'parent': parent_data}
+
+    return JsonResponse(result)
 
 # 로그인 로직
 @api_view(['POST'])
@@ -182,10 +196,6 @@ def compare(request):
                 return JsonResponse({'chunbae': '학생 정보가 존재하지 않습니다'}, status=400)
         except KeyError:
             return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
-
-        ident = Parent.objects.get(id=data)
-        info = Parent.objects.filter(id=data)
-        info_json = ParentSerializer(ident)
 
     try:
         if info.exists():
@@ -325,7 +335,7 @@ def edit_student(request):
 
                 Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
 
-                result = {'chunbae': '데이터 수정', 'resultData': serializer.data}
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=200)
             else:
                 result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
