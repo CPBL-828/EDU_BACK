@@ -357,7 +357,7 @@ def delete_student(request):
             student = Student.objects.filter(studentKey=request.data['studentKey'])
             student.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
@@ -434,7 +434,7 @@ def delete_teacher(request):
             teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
             teacher.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
@@ -508,7 +508,7 @@ def delete_parent(request):
             parent = Parent.objects.filter(parentKey=request.data['parentKey'])
             parent.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 

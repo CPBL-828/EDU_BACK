@@ -325,7 +325,7 @@ def delete_suggest(request):
             suggest = Suggest.objects.filter(suggestKey=request.data['suggestKey'])
             suggest.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
@@ -444,7 +444,7 @@ def delete_consult(request):
             consult = Consult.objects.filter(consultKey=request.data['consultKey'])
             consult.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
@@ -521,7 +521,7 @@ def delete_analysis(request):
             analysis = Consult.objects.filter(analysisKey=request.data['analysisKey'])
             analysis.delete()
 
-            return JsonResponse({'chunbae': '데이터 삭제.'}, status=204)
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:
             return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
 
