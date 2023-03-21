@@ -26,7 +26,7 @@ urlpatterns = [
     path('getAnalysisList/', views.get_analysis_list),
     path('createAnalysis/', views.create_analysis),
     path('editAnalysis/', views.create_analysis),
-    path('deleteAnalysis/', views.create_analysis),
+    path('deleteAnalysis/', views.delete_analysis),
     path('getAttendList/', views.get_attend_list),
     path('createAttend/', views.create_attend),
     path('createWork/', views.create_work),
