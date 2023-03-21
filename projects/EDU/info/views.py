@@ -493,7 +493,7 @@ def edit_analysis(request):
 
             analysis = Analysis.objects.get(analysisKey=request.data['analysisKey'])
 
-            serializer = ConsultSerializer(analysis, data=request.data, partial=True)
+            serializer = AnalysisSerializer(analysis, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
@@ -518,7 +518,7 @@ def delete_analysis(request):
     try:
         if Analysis.objects.filter(analysisKey=request.data['analysisKey']).exists():
 
-            analysis = Consult.objects.filter(analysisKey=request.data['analysisKey'])
+            analysis = Analysis.objects.filter(analysisKey=request.data['analysisKey'])
             analysis.delete()
 
             return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
