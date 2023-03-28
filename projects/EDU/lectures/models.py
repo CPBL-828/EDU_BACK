@@ -67,9 +67,6 @@ class LectureStatus(models.Model):
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
-    def __str__(self):
-        return self.lectureStatusKey
-
 
 # 과제 테이블 생성
 class Assign(models.Model):
