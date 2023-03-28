@@ -596,7 +596,7 @@ def delete_assign(request):
 @api_view(['POST'])
 def get_test_list(request):
     try:
-        if Test.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
             data = list(
                 Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
                                     testDate__icontains=request.data['testDate']
@@ -613,7 +613,7 @@ def get_test_list(request):
 @api_view(['POST'])
 def get_test_status_list(request):
     try:
-        if TestStatus.objects.filter(testKey=request.data['testKey']).exists():
+        if Test.objects.filter(testKey=request.data['testKey']).exists():
             data = list(
                 TestStatus.objects.filter(testKey=request.data['testKey']).order_by('studentName').values())
 
