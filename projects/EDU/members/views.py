@@ -333,23 +333,8 @@ def create_student(request):
     try:
         serializer = StudentSerializer(data=request.data)
         if serializer.is_valid():
-            # 파일 이름 설정
+
             serializer.save()
-            profile_pic = request.FILES.get('profileImg')
-            if profile_pic:
-                file_extension = profile_pic.name.split('.')[-1]
-                file_name = f"{serializer.instance.studentKey}.{file_extension}"
-                file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                with open(file_path, 'wb') as f:
-                    f.write(profile_pic.read())
-                # 이미 저장된 파일의 이름 변경
-                old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
-                new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
-                if os.path.exists(old_file_path):
-                    shutil.move(old_file_path, new_file_path)
-                serializer.instance.profileImg.name = os.path.join('profile', file_name)
-                serializer.instance.save(update_fields=['profileImg'])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
@@ -367,8 +352,6 @@ def edit_student(request):
         if Student.objects.filter(studentKey=request.data['studentKey']).exists():
 
             student = Student.objects.get(studentKey=request.data['studentKey'])
-            profile_pic = request.FILES.get('profileImg', None)
-            old_profile_img = student.profileImg
 
             serializer = StudentSerializer(student, data=request.data, partial=True)
 
@@ -376,6 +359,32 @@ def edit_student(request):
                 serializer.save()
 
                 Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_student_profile(request):
+    try:
+        if Student.objects.filter(studentKey=request.data['studentKey']).exists():
+
+            student = Student.objects.get(studentKey=request.data['studentKey'])
+            profile_pic = request.FILES.get('profileImg', None)
+            old_profile_img = student.profileImg
+
+            serializer = StudentSerializer(student, data=request.data, partial=True)
+
+            if serializer.is_valid():
                 # 프로필 이미지 처리
                 if profile_pic:
                     # 기존 이미지 파일 삭제
@@ -403,6 +412,8 @@ def edit_student(request):
                         os.remove(old_file_path)
                     serializer.instance.profileImg = None
                     serializer.instance.save(update_fields=['profileImg'])
+
+                Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -457,21 +468,6 @@ def create_teacher(request):
         if serializer.is_valid():
             # 파일 이름 설정
             serializer.save()
-            profile_pic = request.FILES.get('profileImg')
-            if profile_pic:
-                file_extension = profile_pic.name.split('.')[-1]
-                file_name = f"{serializer.instance.studentKey}.{file_extension}"
-                file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
-                os.makedirs(os.path.dirname(file_path), exist_ok=True)
-                with open(file_path, 'wb') as f:
-                    f.write(profile_pic.read())
-                # 이미 저장된 파일의 이름 변경
-                old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
-                new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
-                if os.path.exists(old_file_path):
-                    shutil.move(old_file_path, new_file_path)
-                serializer.instance.profileImg.name = os.path.join('profile', file_name)
-                serializer.instance.save(update_fields=['profileImg'])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
@@ -489,18 +485,39 @@ def edit_teacher(request):
         if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
 
             teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
-            profile_pic = request.FILES.get('profileImg')
-            old_profile_img = teacher.profileImg
 
             serializer = TeacherSerializer(teacher, data=request.data, partial=True)
-            if profile_pic == "":
-                serializer.instance.profileImg = None
 
             if serializer.is_valid():
                 serializer.save()
 
                 Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
 
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def edit_teacher_profile(request):
+    try:
+        if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
+
+            teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
+            profile_pic = request.FILES.get('profileImg')
+            old_profile_img = teacher.profileImg
+
+            serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+
+            if serializer.is_valid():
                 # 프로필 이미지 처리
                 if profile_pic:
                     # 기존 이미지 파일 삭제
@@ -529,6 +546,8 @@ def edit_teacher(request):
                     serializer.instance.profileImg = None
                     serializer.instance.save(update_fields=['profileImg'])
 
+                Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
+
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
             else:
@@ -541,7 +560,6 @@ def edit_teacher(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
-
 
 @api_view(['POST'])
 def delete_teacher(request):
