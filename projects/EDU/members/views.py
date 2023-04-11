@@ -1,3 +1,5 @@
+import os
+import shutil
 # serializer 및 drf 사용
 from rest_framework import status
 from rest_framework import viewsets
@@ -21,6 +23,8 @@ from django.db.models import Q
 from django.db.models import F
 # 시간 관련 기능
 import datetime
+# settings 불러오기
+from config.settings import base
 
 
 # CUSTOM model 에 대한 view
@@ -98,6 +102,24 @@ parent_detail = AdminViewSet.as_view({
 })
 
 
+def get_profile_image(request, path):
+    try:
+        # 이미지 파일 경로
+        file_path = os.path.join(base.MEDIA_ROOT, 'profile', path)
+        print(file_path)
+        # 파일이 존재하는지 확인
+        if os.path.exists(file_path):
+            with open(file_path, 'rb') as f:
+                # 이미지 파일을 HttpResponse에 담아 리턴
+                response = HttpResponse(f.read(), content_type="image/jpeg")
+                return response
+        else:
+            return JsonResponse({'chunbae': '파일을 찾을 수 없습니다.'}, status=404)
+
+    except FileNotFoundError:
+        return JsonResponse({'chunbae': ' 파일을 찾을 수 없습니다.'}, status=404)
+
+
 @api_view(['POST'])
 def testLinkedData(request):
     student_data = Student.objects.all()
@@ -110,6 +132,7 @@ def testLinkedData(request):
     result = {'student': student_data, 'parent': parent_data}
 
     return JsonResponse(result)
+
 
 # 로그인 로직
 @api_view(['POST'])
@@ -310,7 +333,23 @@ def create_student(request):
     try:
         serializer = StudentSerializer(data=request.data)
         if serializer.is_valid():
+            # 파일 이름 설정
             serializer.save()
+            profile_pic = request.FILES.get('profileImg')
+            if profile_pic:
+                file_extension = profile_pic.name.split('.')[-1]
+                file_name = f"{serializer.instance.studentKey}.{file_extension}"
+                file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, 'wb') as f:
+                    f.write(profile_pic.read())
+                # 이미 저장된 파일의 이름 변경
+                old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
+                new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                if os.path.exists(old_file_path):
+                    shutil.move(old_file_path, new_file_path)
+                serializer.instance.profileImg.name = os.path.join('profile', file_name)
+                serializer.instance.save(update_fields=['profileImg'])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
@@ -328,21 +367,50 @@ def edit_student(request):
         if Student.objects.filter(studentKey=request.data['studentKey']).exists():
 
             student = Student.objects.get(studentKey=request.data['studentKey'])
+            profile_pic = request.FILES.get('profileImg', None)
+            old_profile_img = student.profileImg
 
             serializer = StudentSerializer(student, data=request.data, partial=True)
+
             if serializer.is_valid():
                 serializer.save()
 
                 Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
+                # 프로필 이미지 처리
+                if profile_pic:
+                    # 기존 이미지 파일 삭제
+                    if old_profile_img:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_profile_img.name)
+                        os.remove(old_file_path)
+
+                    file_extension = profile_pic.name.split('.')[-1]
+                    file_name = f"{student}.{file_extension}"
+                    file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, 'wb') as f:
+                        f.write(profile_pic.read())
+                    # 이미 저장된 파일의 이름 변경
+                    old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    if os.path.exists(old_file_path):
+                        shutil.move(old_file_path, new_file_path)
+                    serializer.instance.profileImg.name = os.path.join('profile', file_name)
+                    serializer.instance.save(update_fields=['profileImg'])
+                else:  # 프로필 이미지를 삭제하는 경우
+                    # 기존 이미지 파일 삭제
+                    if old_profile_img:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_profile_img.name)
+                        os.remove(old_file_path)
+                    serializer.instance.profileImg = None
+                    serializer.instance.save(update_fields=['profileImg'])
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
-                return JsonResponse(result, status=200)
+                return JsonResponse(result, status=201)
             else:
                 result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
                 return JsonResponse(result, status=400)
 
         else:
-
             return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
     except KeyError:
@@ -387,7 +455,23 @@ def create_teacher(request):
     try:
         serializer = TeacherSerializer(data=request.data)
         if serializer.is_valid():
+            # 파일 이름 설정
             serializer.save()
+            profile_pic = request.FILES.get('profileImg')
+            if profile_pic:
+                file_extension = profile_pic.name.split('.')[-1]
+                file_name = f"{serializer.instance.studentKey}.{file_extension}"
+                file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                with open(file_path, 'wb') as f:
+                    f.write(profile_pic.read())
+                # 이미 저장된 파일의 이름 변경
+                old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
+                new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                if os.path.exists(old_file_path):
+                    shutil.move(old_file_path, new_file_path)
+                serializer.instance.profileImg.name = os.path.join('profile', file_name)
+                serializer.instance.save(update_fields=['profileImg'])
 
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
@@ -405,12 +489,45 @@ def edit_teacher(request):
         if Teacher.objects.filter(teacherKey=request.data['teacherKey']).exists():
 
             teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
+            profile_pic = request.FILES.get('profileImg')
+            old_profile_img = teacher.profileImg
 
             serializer = TeacherSerializer(teacher, data=request.data, partial=True)
+            if profile_pic == "":
+                serializer.instance.profileImg = None
+
             if serializer.is_valid():
                 serializer.save()
 
                 Teacher.objects.filter(teacherKey=request.data['teacherKey']).update(editDate=datetime.datetime.now())
+
+                # 프로필 이미지 처리
+                if profile_pic:
+                    # 기존 이미지 파일 삭제
+                    if old_profile_img:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_profile_img.name)
+                        os.remove(old_file_path)
+
+                    file_extension = profile_pic.name.split('.')[-1]
+                    file_name = f"{teacher}.{file_extension}"
+                    file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, 'wb') as f:
+                        f.write(profile_pic.read())
+                    # 이미 저장된 파일의 이름 변경
+                    old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    if os.path.exists(old_file_path):
+                        shutil.move(old_file_path, new_file_path)
+                    serializer.instance.profileImg.name = os.path.join('profile', file_name)
+                    serializer.instance.save(update_fields=['profileImg'])
+                else:  # 프로필 이미지를 삭제하는 경우
+                    # 기존 이미지 파일 삭제
+                    if old_profile_img:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_profile_img.name)
+                        os.remove(old_file_path)
+                    serializer.instance.profileImg = None
+                    serializer.instance.save(update_fields=['profileImg'])
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)

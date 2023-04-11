@@ -15,6 +15,7 @@ router.register(r'parent', views.ParentViewSet, basename='parent')
 # URL 지정
 urlpatterns = [
    path('auth/', include('rest_framework.urls', namespace='rest_framework')),
+   path('getProfileImage/<str:path>/', views.get_profile_image),
    path('testLinkedData/', views.testLinkedData),
    path('compare/', views.compare),
    path('getStudentList/', views.get_student_list),

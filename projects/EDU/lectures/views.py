@@ -418,23 +418,6 @@ def create_lecture_plan(request):
 
 
 @api_view(['POST'])
-def create_lecture_plan(request):
-    try:
-        serializer = LectureSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
-        else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-            return JsonResponse(result, status=400)
-
-    except KeyError:
-        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
-
-
-@api_view(['POST'])
 def create_lecture(request):
     colors = {"국어": "#d57a7b", "수학": "#e39177", "영어": "#eeb958", "국사": "#80bdca",
               "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
