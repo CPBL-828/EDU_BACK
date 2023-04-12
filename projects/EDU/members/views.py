@@ -394,16 +394,16 @@ def edit_student_profile(request):
 
                     file_extension = profile_pic.name.split('.')[-1]
                     file_name = f"profile/{student}.{file_extension}"
-                    file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    file_path = os.path.join(base.MEDIA_ROOT, file_name)
                     os.makedirs(os.path.dirname(file_path), exist_ok=True)
                     with open(file_path, 'wb') as f:
                         f.write(profile_pic.read())
                     # 이미 저장된 파일의 이름 변경
-                    old_file_path = os.path.join(base.MEDIA_ROOT, 'profile', profile_pic.name)
-                    new_file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
+                    old_file_path = os.path.join(base.MEDIA_ROOT, profile_pic.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT,  file_name)
                     if os.path.exists(old_file_path):
                         shutil.move(old_file_path, new_file_path)
-                    serializer.instance.profileImg.name = os.path.join('profile', file_name)
+                    serializer.instance.profileImg.name = os.path.join(file_name)
                     serializer.instance.save(update_fields=['profileImg'])
                 else:  # 프로필 이미지를 삭제하는 경우
                     # 기존 이미지 파일 삭제
