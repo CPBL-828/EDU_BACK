@@ -4,6 +4,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 # viewsets을 router에 등록, URL 자동 생성
 from rest_framework.routers import DefaultRouter
 from . import views
+from config.settings import base
+from django.conf.urls.static import static
 
 # DRF 라우터
 router = DefaultRouter()
@@ -33,4 +35,4 @@ urlpatterns = [
    path('editParent/', views.edit_parent),
    path('deleteParent/', views.delete_parent),
    path('', include(router.urls)),
-]
+] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)
