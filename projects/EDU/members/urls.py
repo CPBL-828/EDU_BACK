@@ -35,4 +35,4 @@ urlpatterns = [
    path('editParent/', views.edit_parent),
    path('deleteParent/', views.delete_parent),
    path('', include(router.urls)),
-] + static(base.MEDIA_URL, document_root=base.MEDIA_ROOT)
+]
