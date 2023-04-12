@@ -393,7 +393,7 @@ def edit_student_profile(request):
                         os.remove(old_file_path)
 
                     file_extension = profile_pic.name.split('.')[-1]
-                    file_name = f"{student}.{file_extension}"
+                    file_name = f"profile/{student}.{file_extension}"
                     file_path = os.path.join(base.MEDIA_ROOT, 'profile', file_name)
                     os.makedirs(os.path.dirname(file_path), exist_ok=True)
                     with open(file_path, 'wb') as f:
