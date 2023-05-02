@@ -1,4 +1,4 @@
-from django.shortcuts import render
+import shutil
 # serializer 및 drf 사용
 from rest_framework import viewsets
 from rest_framework import status, generics
@@ -24,6 +24,8 @@ from django.db.models import Q
 from django.db.models import F
 # 시간 관련 기능
 import datetime
+# settings 불러오기
+from config.settings import base
 
 
 class LectureRoomViewSet(viewsets.ModelViewSet):
@@ -168,25 +170,6 @@ record_detail = RecordViewSet.as_view({
     'patch': 'partial_update',
     'delete': 'destroy',
 })
-
-
-class PlannerViewSet(viewsets.ModelViewSet):
-    queryset = Planner.objects.all()
-    serializer_class = PlannerSerializer
-
-
-planner_list = PlannerViewSet.as_view({
-    'get': 'list',
-    'post': 'create',
-})
-
-planner_detail = PlannerViewSet.as_view({
-    'get': 'retrieve',
-    # 'put': 'update',
-    'patch': 'partial_update',
-    'delete': 'destroy',
-})
-
 
 # 강의실 검색 및 반환
 @api_view(['POST'])
@@ -449,24 +432,104 @@ def create_lecture(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
+@api_view(['POST'])
+def edit_lecture_planner(request):
+    try:
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+
+            lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+            planner = request.FILES.get('planner')
+            old_planner = lecture.planner
+
+            serializer = LectureSerializer(lecture, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                # 강의 계획서 파일 처리
+                if planner:
+                    # 강의 계획서 파일 삭제
+                    if old_planner:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_planner.name)
+                        os.remove(old_file_path)
+
+                    file_extension = planner.name.split('.')[-1]
+                    file_name = f"{lecture}.{file_extension}"
+                    file_path = os.path.join(base.MEDIA_ROOT, 'planner', file_name)
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, 'wb') as f:
+                        f.write(planner.read())
+                    # 이미 저장된 파일의 이름 변경
+                    old_file_path = os.path.join(base.MEDIA_ROOT, 'planner', planner.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT, 'planner', file_name)
+                    if os.path.exists(old_file_path):
+                        shutil.move(old_file_path, new_file_path)
+                    serializer.instance.planner.name = os.path.join('planner', file_name)
+                    serializer.instance.save(update_fields=['planner'])
+                else:  # 강의 계획서 파일을 삭제하는 경우
+                    # 기존 강의 계획서 파일 삭제
+                    if old_planner:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_planner.name)
+                        os.remove(old_file_path)
+                    serializer.instance.planner = None
+                    serializer.instance.save(update_fields=['planner'])
+
+                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 @api_view(['POST'])
-def create_planner(request):
+def edit_lecture(request):
     try:
-        serializer = PlannerSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
+            lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+
+            serializer = LectureSerializer(lecture, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+
+                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
         else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-            return JsonResponse(result, status=400)
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
+@api_view(['POST'])
+def delete_lecture(request):
+    try:
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+
+            lecture = Lecture.objects.filter(lectureKey=request.data['lectureKey'])
+            Lecture.delete()
+
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
+        else:
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+    
 @api_view(['POST'])
 def get_assign_list(request):
     try:
@@ -669,3 +732,26 @@ def delete_test(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_group_list(request):
+    try:
+        group = Group.objects.filter(groupKey=request.data['groupKey'])
+        teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+        if group and not teacher:
+            data = list(Group.objects.filter(groupKey=request.data['groupKey']).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+        #
+        # elif not
+
+        elif not group and not teacher:
+            data = list(Group.objects.all().values())
+
+
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)

@@ -21,6 +21,8 @@ from rest_framework.parsers import JSONParser
 from django.db.models import Q
 # 시간 관련 기능
 from datetime import datetime
+# settings 불러오기
+from config.settings import base
 
 
 # 공지 사항 모델 생성

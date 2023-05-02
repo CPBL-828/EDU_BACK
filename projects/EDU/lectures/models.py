@@ -47,6 +47,7 @@ class Lecture(models.Model):
     endDate = models.DateTimeField(null=True, blank=True, verbose_name='마감일자')
     progress = models.CharField(default='등록 대기 중', max_length=10, verbose_name='진행상태')
     reason = models.TextField(blank=True, verbose_name='사유')
+    planner = models.FileField(null=True, blank=True, upload_to='planner', verbose_name='강의계획서')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
@@ -59,10 +60,10 @@ class LectureStatus(models.Model):
     lectureStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
                                         editable=False,
                                         verbose_name='수강현황키')
-    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
-                                   verbose_name='학생키')
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
-    state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
+    # groupStatusKey = models.ForeignKey('GroupStatus', on_delete=models.CASCADE, db_column='groupStatusKey',
+    #                                verbose_name='반현황키')
+    # state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
     reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
@@ -77,7 +78,7 @@ class Assign(models.Model):
     lectureName = models.CharField(max_length=10, verbose_name='강의명')
     # studentKey = models.CharField(max_length=50, blank=True, null=True, verbose_name='학생키')
     # studentName = models.CharField(max_length=10, blank=True, null=True, verbose_name='학생명')
-    assignment = models.CharField(max_length=50, verbose_name='과제첨부')
+    assignment = models.FileField(null=True, blank=True, upload_to='assignment', verbose_name='과제첨부')
     content = models.TextField(verbose_name='과제내용')
     deadLine = models.DateTimeField(verbose_name="마감일자")
     # status = models.CharField(max_length=10, verbose_name='제출상태')
@@ -144,7 +145,7 @@ class Record(models.Model):
                                       verbose_name='시험현황키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
-    recordAnalysis = models.TextField(verbose_name='성적분석')
+    recordAnalysis = models.TextField(blank=True, verbose_name='성적분석')
     score = models.FloatField(verbose_name='점수')
     rating = models.CharField(max_length=1, verbose_name='등급')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
@@ -155,18 +156,26 @@ class Record(models.Model):
 
 
 # 강의 계획서 생성
-class Planner(models.Model):
-    plannerKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
-                                  verbose_name='계획서키')
-    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
-    lectureName = models.CharField(max_length=10, verbose_name='강의명')
-    teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey',
-                                   verbose_name='강사키')
-    teacherName = models.CharField(max_length=10, verbose_name='강사명')
-    day = models.DateTimeField(verbose_name='강의일자')
-    content = models.TextField(verbose_name='내용')
-    createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
-    editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
-
-    def __str__(self):
-        return self.plannerKey
+#
+# class Group(models.Model):
+#     groupKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
+#                                 verbose_name='반키')
+#     teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey',
+#                                    verbose_name='담당강사키')
+#     groupName = models.CharField(max_length=10, verbose_name='반명')
+#     groupContent = models.TextField(blank=True, verbose_name='내용')
+#     endDate = models.DateTimeField(null=True, blank=True, verbose_name='마감일자')
+#     delState = models.CharField(max_length=1, default='N', verbose_name='삭제여부')
+#     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
+#     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+#
+#
+# class GroupStatus(models.Model):
+#     groupStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
+#                                       verbose_name='반키')
+#     groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey',
+#                                  verbose_name='반키')
+#     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
+#                                    verbose_name='학생키')
+#     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
+#     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')

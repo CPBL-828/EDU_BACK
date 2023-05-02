@@ -32,7 +32,7 @@ class Teacher(models.Model):
     joinDate = models.DateField(verbose_name='입사일')
     leaveDate = models.DateField(null=True, blank=True, verbose_name='퇴사일')
     resume = models.FileField(null=True, blank=True, upload_to='resume', verbose_name='이력서')
-    profileImg = models.ImageField(blank=True, null=True, upload_to="프로필사진링크")
+    profileImg = models.ImageField(blank=True, null=True, upload_to="profile", verbose_name='프로필사진링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 

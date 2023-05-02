@@ -574,9 +574,9 @@ def edit_teacher_resume(request):
             serializer = TeacherSerializer(teacher, data=request.data, partial=True)
 
             if serializer.is_valid():
-                # 프로필 이미지 처리
+                # 이력서 파일 처리
                 if resume:
-                    # 기존 이미지 파일 삭제
+                    # 기존 이력서 파일 삭제
                     if old_resume:
                         old_file_path = os.path.join(base.MEDIA_ROOT, old_resume.name)
                         os.remove(old_file_path)
@@ -594,8 +594,8 @@ def edit_teacher_resume(request):
                         shutil.move(old_file_path, new_file_path)
                     serializer.instance.resume.name = os.path.join('resume', file_name)
                     serializer.instance.save(update_fields=['resume'])
-                else:  # 프로필 이미지를 삭제하는 경우
-                    # 기존 이미지 파일 삭제
+                else:  # 이력서 파일을 삭제하는 경우
+                    # 이력서 파일 삭제
                     if old_resume:
                         old_file_path = os.path.join(base.MEDIA_ROOT, old_resume.name)
                         os.remove(old_file_path)
