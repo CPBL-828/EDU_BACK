@@ -29,6 +29,7 @@ urlpatterns = [
    path('createTeacher/', views.create_teacher),
    path('editTeacher/', views.edit_teacher),
    path('editTeacherProfile/', views.edit_teacher_profile),
+   path('editTeacherResume/', views.edit_teacher_resume),
    path('deleteTeacher/', views.delete_teacher),
    path('getParentList/', views.get_parent_list),
    path('createParent/', views.create_parent),
