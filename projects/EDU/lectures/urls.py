@@ -13,7 +13,8 @@ router.register(r'assignStatus', views.AssignStatusViewSet, basename='assignStat
 router.register(r'test', views.TestViewSet, basename='test')
 router.register(r'testStatus', views.TestStatusViewSet, basename='testStatus')
 router.register(r'record', views.RecordViewSet, basename='record')
-router.register(r'planner', views.PlannerViewSet, basename='planner')
+# router.register(r'group', views.GroupViewSet, basename='group')
+# router.register(r'groupStatus', views.GroupStatusViewSet, basename='groupStatus')
 
 urlpatterns = [
     path('getRoomList/', views.get_room_list),
@@ -25,7 +26,9 @@ urlpatterns = [
     path('getLectureInfo/', views.get_lecture_info),
     path('createLecturePlan/', views.create_lecture_plan),
     path('createLecture/', views.create_lecture),
-    path('createPlanner/', views.create_planner),
+    path('editLecturePlanner/', views.edit_lecture_planner),
+    path('editLecture/', views.edit_lecture),
+    path('deleteLecture/', views.delete_lecture),
     path('getAssignList/', views.get_assign_list),
     path('createAssign/', views.create_assign),
     path('createAssignStatus/', views.CreateAssignStatusView.as_view()),
@@ -37,5 +40,9 @@ urlpatterns = [
     # path('createTestStatus/', views.CreateTestStatusView.as_view()),
     path('editTest/', views.edit_test),
     path('deleteTest/', views.delete_test),
+    # path('getGroupList/, views.'),
+    # path('createGroup/, views.'),
+    # path('editGroup/, views.'),
+    # path('deleteGroup/, views.'),
     path('', include(router.urls)),
 ]
