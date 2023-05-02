@@ -56,10 +56,17 @@ class RecordSerializer(serializers.ModelSerializer):
         model = models.Record
         fields = \
             '__all__'
-
-
-class PlannerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Planner
-        fields = \
-            '__all__'
+#
+#
+# class GroupSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.Group
+#         fields = \
+#             '__all__'
+#
+#
+# class GroupStatusSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.GroupStatus
+#         fields = \
+#             '__all__'
