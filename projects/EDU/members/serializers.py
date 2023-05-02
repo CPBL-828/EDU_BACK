@@ -17,7 +17,6 @@ class AdminSerializer(serializers.ModelSerializer):
 
 
 class StudentSerializer(serializers.ModelSerializer):
-    profileImg = serializers.ImageField()
     class Meta:
         model = models.Student
         fields = \
