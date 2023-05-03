@@ -68,6 +68,8 @@ class LectureStatus(models.Model):
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
+    def __str__(self):
+        return self.lectureStatusKey
 
 # 과제 테이블 생성
 class Assign(models.Model):
@@ -75,17 +77,15 @@ class Assign(models.Model):
                                  editable=False,
                                  verbose_name='과제키')
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
-    lectureName = models.CharField(max_length=10, verbose_name='강의명')
-    # studentKey = models.CharField(max_length=50, blank=True, null=True, verbose_name='학생키')
-    # studentName = models.CharField(max_length=10, blank=True, null=True, verbose_name='학생명')
     assignment = models.FileField(null=True, blank=True, upload_to='assignment', verbose_name='과제첨부')
     content = models.TextField(verbose_name='과제내용')
     deadLine = models.DateTimeField(verbose_name="마감일자")
-    # status = models.CharField(max_length=10, verbose_name='제출상태')
-    # score = models.FloatField(verbose_name='점수')
     type = models.CharField(max_length=10, verbose_name='과제유형')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    def __str__(self):
+        return self.assignKey
 
 
 class AssignStatus(models.Model):
@@ -94,7 +94,6 @@ class AssignStatus(models.Model):
                                        verbose_name='과제현황키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
-    studentName = models.CharField(max_length=10, verbose_name='학생명')
     assignKey = models.ForeignKey('Assign', on_delete=models.CASCADE, db_column='assignKey', verbose_name='과제키')
     assignState = models.CharField(max_length=10, default='미제출', verbose_name='제출상태')
     assignScore = models.FloatField(blank=True, null=True, verbose_name='점수')

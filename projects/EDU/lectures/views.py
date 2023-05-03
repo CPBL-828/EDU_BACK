@@ -595,6 +595,60 @@ class CreateAssignStatusView(generics.ListCreateAPIView):
             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
             return JsonResponse(result, status=400)
 
+@api_view(['POST'])
+def edit_assign_file(request):
+    try:
+        if Assign.objects.filter(assignKey=request.data['assignKey']).exists():
+
+            assign = Assign.objects.get(assignKey=request.data['assignKey'])
+            assign_file = request.FILES.get('assignment')
+            old_assign_file = assign.assignment
+
+            serializer = AssignSerializer(assign, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                # 강의 계획서 파일 처리
+                if assign_file:
+                    # 강의 계획서 파일 삭제
+                    if old_assign_file:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_assign_file.name)
+                        os.remove(old_file_path)
+
+                    file_extension = assign_file.name.split('.')[-1]
+                    file_name = f"{assign}.{file_extension}"
+                    file_path = os.path.join(base.MEDIA_ROOT, 'assignment', file_name)
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, 'wb') as f:
+                        f.write(assign_file.read())
+                    # 이미 저장된 파일의 이름 변경
+                    old_file_path = os.path.join(base.MEDIA_ROOT, 'assignment', assign_file.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT, 'assignment', file_name)
+                    if os.path.exists(old_file_path):
+                        shutil.move(old_file_path, new_file_path)
+                    serializer.instance.assignment.name = os.path.join('assignment', file_name)
+                    serializer.instance.save(update_fields=['assignment'])
+                else:  # 강의 계획서 파일을 삭제하는 경우
+                    # 기존 강의 계획서 파일 삭제
+                    if old_assign_file:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_assign_file.name)
+                        os.remove(old_file_path)
+                    serializer.instance.assignment = None
+                    serializer.instance.save(update_fields=['assignment'])
+
+                Assign.objects.filter(assignKey=request.data['assignKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 @api_view(['POST'])
 def edit_assign(request):
