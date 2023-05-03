@@ -771,6 +771,60 @@ def edit_test(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
+@api_view(['POST'])
+def edit_test_sheet(request):
+    try:
+        if Test.objects.filter(testKey=request.data['testKey']).exists():
+
+            test = Test.objects.get(testKey=request.data['testKey'])
+            test_sheet = request.FILES.get('testSheet')
+            old_test_sheet = test.testSheet
+
+            serializer = TestSerializer(test, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                # 강의 계획서 파일 처리
+                if test_sheet:
+                    # 강의 계획서 파일 삭제
+                    if old_test_sheet:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_test_sheet.name)
+                        os.remove(old_file_path)
+
+                    file_extension = test_sheet.name.split('.')[-1]
+                    file_name = f"{test}.{file_extension}"
+                    file_path = os.path.join(base.MEDIA_ROOT, 'testSheet', file_name)
+                    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+                    with open(file_path, 'wb') as f:
+                        f.write(test_sheet.read())
+                    # 이미 저장된 파일의 이름 변경
+                    old_file_path = os.path.join(base.MEDIA_ROOT, 'testSheet', test_sheet.name)
+                    new_file_path = os.path.join(base.MEDIA_ROOT, 'testSheet', file_name)
+                    if os.path.exists(old_file_path):
+                        shutil.move(old_file_path, new_file_path)
+                    serializer.instance.testSheet.name = os.path.join('testSheet', file_name)
+                    serializer.instance.save(update_fields=['testSheet'])
+                else:  # 강의 계획서 파일을 삭제하는 경우
+                    # 기존 강의 계획서 파일 삭제
+                    if old_test_sheet:
+                        old_file_path = os.path.join(base.MEDIA_ROOT, old_test_sheet.name)
+                        os.remove(old_file_path)
+                    serializer.instance.testSheet = None
+                    serializer.instance.save(update_fields=['testSheet'])
+
+                Test.objects.filter(testKey=request.data['testKey']).update(editDate=datetime.datetime.now())
+
+                result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
 @api_view(['POST'])
 def delete_test(request):

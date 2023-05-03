@@ -107,10 +107,9 @@ class Test(models.Model):
     testKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                verbose_name='시험키')
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
-    lectureName = models.CharField(max_length=10, verbose_name='강의명')
     testDate = models.DateTimeField(verbose_name='시험일자')
     testType = models.CharField(max_length=10, verbose_name='시험유형')
-    testSheet = models.CharField(null=True, blank=True, max_length=50, verbose_name='시험지링크')
+    testSheet = models.FileField(null=True, blank=True, upload_to='testSheet', verbose_name='시험지링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 

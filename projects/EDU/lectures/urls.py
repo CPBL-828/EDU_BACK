@@ -40,6 +40,7 @@ urlpatterns = [
     path('createTest/', views.create_test),
     # path('createTestStatus/', views.CreateTestStatusView.as_view()),
     path('editTest/', views.edit_test),
+    path('editTestSheet/', views.edit_test_sheet),
     path('deleteTest/', views.delete_test),
     # path('getGroupList/, views.'),
     # path('createGroup/, views.'),
