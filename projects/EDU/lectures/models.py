@@ -64,7 +64,7 @@ class LectureStatus(models.Model):
     # groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey', verbose_name='반키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
-    state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
+    state = models.CharField(default='등록', max_length=10, blank=True, verbose_name='수강상태')
     reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
