@@ -61,9 +61,10 @@ class LectureStatus(models.Model):
                                         editable=False,
                                         verbose_name='수강현황키')
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
-    # groupStatusKey = models.ForeignKey('GroupStatus', on_delete=models.CASCADE, db_column='groupStatusKey',
-    #                                verbose_name='반현황키')
-    # state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
+    # groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey', verbose_name='반키')
+    studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
+                                   verbose_name='학생키')
+    state = models.CharField(max_length=10, blank=True, verbose_name='수강상태')
     reason = models.TextField(blank=True, verbose_name='사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
@@ -152,8 +153,8 @@ class Record(models.Model):
     def __str__(self):
         return self.recordKey
 
-
-# 강의 계획서 생성
+#
+# # 강의 계획서 생성
 #
 # class Group(models.Model):
 #     groupKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
@@ -167,6 +168,9 @@ class Record(models.Model):
 #     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
 #     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 #
+#     def __str__(self):
+#         return self.groupKey
+#
 #
 # class GroupStatus(models.Model):
 #     groupStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
@@ -177,3 +181,6 @@ class Record(models.Model):
 #                                    verbose_name='학생키')
 #     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
 #     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+#
+#     def __str__(self):
+#         return self.groupStatusKey
