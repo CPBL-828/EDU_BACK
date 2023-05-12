@@ -406,6 +406,8 @@ def create_lecture(request):
               "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
               "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
 
+    # total = list(LectureStatus.objects.filter(lectureKey=request.data['lectureKey']).values())
+
     try:
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
@@ -418,6 +420,7 @@ def create_lecture(request):
 
                 subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=request.data['lectureKey'])
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[subject])
+                # Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total)
 
                 result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -493,11 +496,13 @@ def edit_lecture(request):
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
             lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+            # total = list(LectureStatus.objects.filter(lectureKey=lecture).values())
 
             serializer = LectureSerializer(lecture, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
+                # Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total)
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
@@ -535,11 +540,14 @@ def get_assign_list(request):
     try:
         if Assign.objects.filter(lectureKey=request.data['lectureKey']).exists():
             data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
-                                              ).values())
+                                              ).order_by('deadLine').values())
 
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
+
+        else:
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
@@ -863,3 +871,20 @@ def get_group_list(request):
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+# @api_view(['POST'])
+# def create_group(request):
+#     try:
+#         group = Group.objects.filter(groupKey=request.data['groupKey'])
+#         teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+#         if group and not teacher:
+#             data = list(Group.objects.filter(groupKey=request.data['groupKey']).values())
+#
+#             result = {'resultData': data, 'count': len(data)}
+#
+#             return JsonResponse(result, status=200)
+#         #
+#         # elif not
+#
+#         elif not group and not teacher:
+#             data = list(Group.objects.all().values())
