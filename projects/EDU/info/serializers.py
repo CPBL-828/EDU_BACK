@@ -42,3 +42,10 @@ class AnalysisSerializer(serializers.ModelSerializer):
         model = models.Analysis
         fields = \
             '__all__'
+
+
+class PresenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Presence
+        fields = \
+            '__all__'

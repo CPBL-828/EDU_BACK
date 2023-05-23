@@ -42,9 +42,9 @@ urlpatterns = [
     path('editTest/', views.edit_test),
     path('editTestSheet/', views.edit_test_sheet),
     path('deleteTest/', views.delete_test),
-    # path('getGroupList/, views.'),
-    # path('createGroup/, views.'),
-    # path('editGroup/, views.'),
-    # path('deleteGroup/, views.'),
+    path('getGroupList/', views.get_group_list),
+    path('createGroup/', views.create_group),
+    path('editGroup/', views.edit_group),
+    path('deleteGroup/', views.delete_group),
     path('', include(router.urls)),
 ]

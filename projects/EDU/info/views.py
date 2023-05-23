@@ -134,6 +134,24 @@ analysis_detail = AnalysisViewSet.as_view({
 })
 
 
+class PresenceViewSet(viewsets.ModelViewSet):
+    queryset = Presence.objects.all()
+    serializer_class = PresenceSerializer
+
+
+presence_list = PresenceViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+presence_detail = PresenceViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
 # 공지 리스트 검색 결과 반환
 @api_view(['POST'])
 def get_notice_list(request):
@@ -614,6 +632,38 @@ def get_work_list(request):
 def create_work(request):
     try:
         serializer = WorkSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def get_presence_list(request):
+    try:
+        if Presence.objects.filter(presenceKey=request.data['presenceKey']).exists():
+
+            presence = Presence.objects.get(presenceKey=request.data['presenceKey'])
+
+
+        else:
+
+            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+@api_view(['POST'])
+def create_presence(request):
+    try:
+        serializer = PresenceSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
 

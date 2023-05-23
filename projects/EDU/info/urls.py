@@ -10,6 +10,7 @@ router.register(r'work', views.WorkViewSet, basename='work')
 router.register(r'suggest', views.SuggestViewSet, basename='suggest')
 router.register(r'consult', views.ConsultViewSet, basename='consult')
 router.register(r'analysis', views.AnalysisViewSet, basename='analysis')
+router.register(r'presence', views.PresenceViewSet, basename='presence')
 
 urlpatterns = [
     path('getNoticeList/', views.get_notice_list),
