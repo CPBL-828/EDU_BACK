@@ -899,7 +899,7 @@ def get_group_list(request):
         group = Group.objects.filter(groupKey=request.data['groupKey'])
         teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
 
-        data = Group.objects.all()
+        data = list(Group.objects.all().values())
 
         result = {'resultData': data, 'count': len(data)}
 
