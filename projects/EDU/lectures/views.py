@@ -172,6 +172,42 @@ record_detail = RecordViewSet.as_view({
 })
 
 
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+group_list = RecordViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+group_detail = RecordViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class GroupStatusViewSet(viewsets.ModelViewSet):
+    queryset = GroupStatus.objects.all()
+    serializer_class = GroupStatusSerializer
+
+
+groupStatus_list = GroupStatusViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+groupStatus_detail = GroupStatusViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
 # 강의실 검색 및 반환
 @api_view(['POST'])
 def get_room_list(request):

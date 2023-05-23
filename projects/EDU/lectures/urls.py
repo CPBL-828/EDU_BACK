@@ -13,8 +13,8 @@ router.register(r'assignStatus', views.AssignStatusViewSet, basename='assignStat
 router.register(r'test', views.TestViewSet, basename='test')
 router.register(r'testStatus', views.TestStatusViewSet, basename='testStatus')
 router.register(r'record', views.RecordViewSet, basename='record')
-# router.register(r'group', views.GroupViewSet, basename='group')
-# router.register(r'groupStatus', views.GroupStatusViewSet, basename='groupStatus')
+router.register(r'group', views.GroupViewSet, basename='group')
+router.register(r'groupStatus', views.GroupStatusViewSet, basename='groupStatus')
 
 urlpatterns = [
     path('getRoomList/', views.get_room_list),
