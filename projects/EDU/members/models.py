@@ -4,7 +4,6 @@ import uuid
 import shortuuid
 from shortuuid.django_fields import ShortUUIDField
 from django.db import models
-from lectures.models import *
 
 
 # 강사 모델 생성

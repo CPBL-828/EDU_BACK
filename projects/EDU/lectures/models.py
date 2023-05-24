@@ -5,7 +5,7 @@ import uuid
 import shortuuid
 from shortuuid.django_fields import ShortUUIDField
 # 모델 import
-from members.models import *
+from members.models import Teacher, Student
 
 
 # 강의 관련 모델 작성
@@ -162,6 +162,14 @@ class Group(models.Model):
                                 verbose_name='반키')
     teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey',
                                    verbose_name='담당강사키')
+    teacherName = models.CharField(max_length=10, db_column='teacherName', null=True, blank=True, verbose_name='담당강사명')
+
+    def save(self, *args, **kwargs):
+        if self.teacherKey:
+            teacher = Teacher.objects.get(teacherKey=self.teacherKey)
+            self.teacherName = teacher.name
+        super().save(*args, **kwargs)
+
     groupName = models.CharField(max_length=10, verbose_name='반명')
     groupContent = models.TextField(blank=True, verbose_name='내용')
     endDate = models.DateTimeField(null=True, blank=True, verbose_name='마감일자')

@@ -898,24 +898,22 @@ def get_group_list(request):
     try:
         group = Group.objects.filter(groupKey=request.data['groupKey'])
         teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+        student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
 
-        data = list(Group.objects.all().values())
+        if request.data['userType'] == 'ADM':
+            data = list(Group.objects.all().values())
+            result = {'resultData': data, 'count': len(data)}
 
-        result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
 
-        return JsonResponse(result, status=200)
+        elif request.data['userType'] == 'TEA':
+            data = list(Group.objects.filter(teacherKey=teacher).values())
+            result = {'resultData': data, 'count': len(data)}
 
-        # if group and not teacher:
-        #     data = list(Group.objects.filter(groupKey=request.data['groupKey']).values())
-        #
-        #     result = {'resultData': data, 'count': len(data)}
-        #
-        #     return JsonResponse(result, status=200)
-        # #
-        # # elif not
-        #
-        # elif not group and not teacher:
-        #     data = list(Group.objects.all().values())
+            return JsonResponse(result, status=200)
+
+        # elif request.data['userType'] == 'STU':
+        #     gstat =
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
