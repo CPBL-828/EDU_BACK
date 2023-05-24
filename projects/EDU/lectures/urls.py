@@ -44,6 +44,7 @@ urlpatterns = [
     path('deleteTest/', views.delete_test),
     path('getGroupList/', views.get_group_list),
     path('createGroup/', views.create_group),
+    path('createGroupStatus/', views.create_group_status),
     path('editGroup/', views.edit_group),
     path('deleteGroup/', views.delete_group),
     path('', include(router.urls)),

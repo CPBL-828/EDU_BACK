@@ -26,6 +26,7 @@ urlpatterns = [
    path('editStudentProfile/', views.edit_student_profile),
    path('deleteStudent/', views.delete_student),
    path('getTeacherList/', views.get_teacher_list),
+   path('getTeacherDetail', views.get_teacher_detail),
    path('createTeacher/', views.create_teacher),
    path('editTeacher/', views.edit_teacher),
    path('editTeacherProfile/', views.edit_teacher_profile),
