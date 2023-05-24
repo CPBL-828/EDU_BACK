@@ -901,7 +901,7 @@ def get_group_list(request):
         student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
 
         if request.data['userType'] == 'ADM':
-            data = list(Group.objects.all().values())
+            data = list(Group.objects.all().order_by('groupName').values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
@@ -913,7 +913,7 @@ def get_group_list(request):
             return JsonResponse(result, status=200)
 
         # elif request.data['userType'] == 'STU':
-        #     gstat =
+        #     gstat = GroupStatus.
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
@@ -923,6 +923,23 @@ def get_group_list(request):
 def create_group(request):
     try:
         serializer = GroupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def create_group_status(request):
+    try:
+        serializer = GroupStatusSerializer(data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
 

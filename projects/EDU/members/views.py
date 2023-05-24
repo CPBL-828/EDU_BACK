@@ -462,6 +462,20 @@ def get_teacher_list(request):
 
 
 @api_view(['POST'])
+def get_teacher_detail(request):
+    try:
+        data = list(Teacher.objects.filter(
+            teacherKey=request.data['teacherKey']
+        ).values())
+
+        result = {'resultData': data}
+
+        return JsonResponse(result, status=200)
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
 def create_teacher(request):
     try:
         serializer = TeacherSerializer(data=request.data)
