@@ -170,7 +170,7 @@ class Group(models.Model):
             self.teacherName = teacher.name
         super().save(*args, **kwargs)
 
-    groupName = models.CharField(max_length=10, verbose_name='반명')
+    groupName = models.CharField(max_length=50, verbose_name='반명')
     groupContent = models.TextField(blank=True, verbose_name='내용')
     endDate = models.DateTimeField(null=True, blank=True, verbose_name='마감일자')
     delState = models.CharField(max_length=1, default='N', verbose_name='삭제여부')
