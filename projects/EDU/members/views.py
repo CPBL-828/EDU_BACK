@@ -1,5 +1,6 @@
 import os
 import shutil
+from django.db.models import Func
 # serializer 및 drf 사용
 from rest_framework import status
 from rest_framework import viewsets
@@ -239,6 +240,11 @@ def compare(request):
 @api_view(['POST'])
 def get_student_list(request):
     try:
+        ko_kr = Func(
+            "name",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
         # userKey 있는 지 확인
         if len(request.data["userKey"]) > 0 and len(request.data['lectureKey']) == 0:
 
@@ -255,7 +261,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).order_by('name').values())
+                    ).order_by(ko_kr.asc()).values())
 
                     result = {'resultData': data, 'count': len(data)}
 
@@ -266,7 +272,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).order_by('name').values())
+                    ).order_by(ko_kr.asc()).values())
 
                     result = {'resultData': data, 'count': len(data)}
 
@@ -287,7 +293,7 @@ def get_student_list(request):
                         Q(name__icontains=request.data['search']) |
                         Q(school__icontains=request.data['search']) |
                         Q(grade__icontains=request.data['search'])
-                    ).order_by('name').values())
+                    ).order_by(ko_kr.asc()).values())
 
                     result = {'resultData': data, 'count': len(data)}
                     return JsonResponse(result, status=200)
@@ -306,7 +312,7 @@ def get_student_list(request):
                     Q(name__icontains=request.data['search']) |
                     Q(school__icontains=request.data['search']) |
                     Q(grade__icontains=request.data['search'])
-                ).order_by('name').values())
+                ).order_by(ko_kr.asc()).values())
 
                 result = {'resultData': data, 'count': len(data)}
                 return JsonResponse(result, status=200)
@@ -319,7 +325,7 @@ def get_student_list(request):
                 Q(name__icontains=request.data['search']) |
                 Q(school__icontains=request.data['search']) |
                 Q(grade__icontains=request.data['search'])
-            ).order_by('name').values())
+            ).order_by(ko_kr.asc()).values())
 
             result = {'resultData': data, 'count': len(data)}
             return JsonResponse(result, status=200)
@@ -448,11 +454,16 @@ def delete_student(request):
 @api_view(['POST'])
 def get_teacher_list(request):
     try:
+        ko_kr = Func(
+            "name",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
         data = list(Teacher.objects.filter(
             Q(name__icontains=request.data['search']) |
             Q(part__icontains=request.data['search']) |
             Q(resSubject__icontains=request.data['search'])
-        ).order_by('name').values())
+        ).order_by(ko_kr.asc()).values())
 
         result = {'resultData': data, 'count': len(data)}
 
@@ -464,10 +475,7 @@ def get_teacher_list(request):
 @api_view(['POST'])
 def get_teacher_detail(request):
     try:
-        data = list(Teacher.objects.filter(
-            teacherKey=request.data['teacherKey']
-        ).values())
-
+        data = list(Teacher.objects.filter(teacherKey=request.data['teacherKey']).values())
         result = {'resultData': data}
 
         return JsonResponse(result, status=200)

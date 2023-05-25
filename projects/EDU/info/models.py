@@ -4,7 +4,7 @@ import uuid
 import shortuuid
 from shortuuid.django_fields import ShortUUIDField
 # 모델 import
-from members.models import *
+from members.models import Student, Teacher
 from lectures.models import *
 
 
@@ -125,3 +125,6 @@ class Presence(models.Model):
     reason = models.TextField(blank=True, verbose_name='수정사유')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    def __str__(self):
+        return self.presenceKey

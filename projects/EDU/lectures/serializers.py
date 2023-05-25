@@ -23,6 +23,13 @@ class LectureStatusSerializer(serializers.ModelSerializer):
             '__all__'
 
 
+class LectureStatusPlusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.LectureStatusPlus
+        fields = \
+            '__all__'
+
+
 class AssignSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Assign

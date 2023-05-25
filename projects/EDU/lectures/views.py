@@ -1,4 +1,5 @@
 import shutil
+from django.db.models import Func
 # serializer 및 drf 사용
 from rest_framework import viewsets
 from rest_framework import status, generics
@@ -75,6 +76,24 @@ lectureStatus_list = LectureStatusViewSet.as_view({
 })
 
 lectureStatus_detail = LectureStatusViewSet.as_view({
+    'get': 'retrieve',
+    # 'put': 'update',
+    'patch': 'partial_update',
+    'delete': 'destroy',
+})
+
+
+class LectureStatusPlusViewSet(viewsets.ModelViewSet):
+    queryset = LectureStatusPlus.objects.all()
+    serializer_class = LectureStatusPlusSerializer
+
+
+lectureStatusPlus_list = LectureStatusPlusViewSet.as_view({
+    'get': 'list',
+    'post': 'create',
+})
+
+lectureStatusPlus_detail = LectureStatusPlusViewSet.as_view({
     'get': 'retrieve',
     # 'put': 'update',
     'patch': 'partial_update',
@@ -211,10 +230,15 @@ groupStatus_detail = GroupStatusViewSet.as_view({
 # 강의실 검색 및 반환
 @api_view(['POST'])
 def get_room_list(request):
+    ko_kr = Func(
+        "name",
+        function="ko_KR.utf8",
+        template='(%(expressions)s) COLLATE "%(function)s"'
+    )
     data = list(LectureRoom.objects.filter(
         Q(name__icontains=request.data['search']) |
         Q(type__icontains=request.data['search'])
-    ).values())
+    ).order_by(ko_kr.asc()).values())
 
     result = {'resultData': data, 'count': len(data)}
 
@@ -285,6 +309,12 @@ def delete_room(request):
 @api_view(['POST'])
 def get_lecture_list(request):
     try:
+        ko_kr = Func(
+            "lectureName",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
+
         if len(request.data["userKey"]) > 0 and len(request.data['roomKey']) == 0:
             # 받은 userKey와 teacherKey와 매칭
             try:
@@ -295,7 +325,7 @@ def get_lecture_list(request):
                         Q(lectureName__icontains=request.data['lectureName']) &
                         Q(roomName__icontains=request.data['roomName']) &
                         Q(target__icontains=request.data['target']))
-                                   .values())
+                                   .order_by(ko_kr.asc()).values())
 
                     result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -318,7 +348,7 @@ def get_lecture_list(request):
                         Q(lectureName__icontains=request.data['lectureName']) &
                         Q(roomName__icontains=request.data['roomName']) &
                         Q(target__icontains=request.data['target']))
-                                   .values())
+                                   .order_by(ko_kr.asc()).values())
 
                     result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -340,7 +370,7 @@ def get_lecture_list(request):
                         Q(lectureName__icontains=request.data['lectureName']) &
                         Q(roomName__icontains=request.data['roomName']) &
                         Q(target__icontains=request.data['target']))
-                                   .values())
+                                   .order_by(ko_kr.asc()).values())
 
                     result = {'resultData': lecture, 'count': len(lecture)}
 
@@ -358,7 +388,7 @@ def get_lecture_list(request):
                 Q(lectureName__icontains=request.data['lectureName']) &
                 Q(roomName__icontains=request.data['roomName']) &
                 Q(target__icontains=request.data['target']))
-                        .values())
+                        .order_by(ko_kr.asc()).values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -471,6 +501,23 @@ def create_lecture(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+
+@api_view(['POST'])
+def create_lecture_status(request):
+    try:
+        serializer = LectureStatusPlusSerializer(data=request.data, many=isinstance(request.data, list))
+        if serializer.is_valid():
+            serializer.save()
+            print("data", request.data)
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
 @api_view(['POST'])
@@ -609,38 +656,20 @@ def create_assign(request):
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
-# type = 전체 강의키에 해당하는 애들 저장 / 개별이면 넘어온 학생 리스트 저장
-# 받아야할 값 학생키, 학생이름, 과제키
-# @api_view(['POST'])
-# def create_assign_status(request):
-#     try:
-#         serializer = AssignStatusSerializer(data=request.data, many=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#
-#             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-#             return JsonResponse(result, status=201)
-#         else:
-#             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-#             return JsonResponse(result, status=400)
-#
-#     except KeyError:
-#         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
-
-class CreateAssignStatusView(generics.ListCreateAPIView):
-    queryset = AssignStatus.objects.all()
-    serializer_class = AssignStatusSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data, many=True)
-
+@api_view(['POST'])
+def create_assign_status(request):
+    try:
+        serializer = AssignStatusSerializer(data=request.data, many=isinstance(request.data, list))
         if serializer.is_valid():
-            self.perform_create(serializer)
+            serializer.save()
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
             result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
             return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
 @api_view(['POST'])
@@ -795,6 +824,22 @@ def create_test(request):
 
 
 @api_view(['POST'])
+def create_test_status(request):
+    try:
+        serializer = TestStatusSerializer(data=request.data, many=isinstance(request.data, list))
+        if serializer.is_valid():
+            serializer.save()
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
 def edit_test(request):
     try:
         if Test.objects.filter(testKey=request.data['testKey']).exists():
@@ -896,18 +941,24 @@ def delete_test(request):
 @api_view(['POST'])
 def get_group_list(request):
     try:
+        ko_kr = Func(
+            "groupName",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
+
         group = Group.objects.filter(groupKey=request.data['groupKey'])
         teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
         student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
 
         if request.data['userType'] == 'ADM':
-            data = list(Group.objects.all().order_by('groupName').values())
+            data = list(Group.objects.all().order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
         elif request.data['userType'] == 'TEA':
-            data = list(Group.objects.filter(teacherKey=teacher).values())
+            data = list(Group.objects.filter(teacherKey=teacher).order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
@@ -939,10 +990,9 @@ def create_group(request):
 @api_view(['POST'])
 def create_group_status(request):
     try:
-        serializer = GroupStatusSerializer(data=request.data, many=True)
+        serializer = GroupStatusSerializer(data=request.data, many=isinstance(request.data, list))
         if serializer.is_valid():
             serializer.save()
-
             result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:

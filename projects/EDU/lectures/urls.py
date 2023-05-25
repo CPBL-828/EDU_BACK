@@ -8,6 +8,7 @@ router = DefaultRouter()
 router.register(r'lectureRoom', views.LectureRoomViewSet, basename='lectureRoom')
 router.register(r'lecture', views.LectureViewSet, basename='lecture')
 router.register(r'lectureStatus', views.LectureStatusViewSet, basename='lectureStatus')
+router.register(r'lectureStatusPlus', views.LectureStatusPlusViewSet, basename='lectureStatusPlus')
 router.register(r'assign', views.AssignViewSet, basename='assign')
 router.register(r'assignStatus', views.AssignStatusViewSet, basename='assignStatus')
 router.register(r'test', views.TestViewSet, basename='test')
@@ -26,19 +27,20 @@ urlpatterns = [
     path('getLectureInfo/', views.get_lecture_info),
     path('createLecturePlan/', views.create_lecture_plan),
     path('createLecture/', views.create_lecture),
+    path('createLectureStatus/', views.create_lecture_status),
     path('editLecturePlanner/', views.edit_lecture_planner),
     path('editLecture/', views.edit_lecture),
     path('deleteLecture/', views.delete_lecture),
     path('getAssignList/', views.get_assign_list),
     path('createAssign/', views.create_assign),
-    path('createAssignStatus/', views.CreateAssignStatusView.as_view()),
+    path('createAssignStatus/', views.create_assign_status),
     path('editAssignFile/', views.edit_assign_file),
     path('editAssign/', views.edit_assign),
     path('deleteAssign/', views.delete_assign),
     path('getTestList/', views.get_test_list),
     path('getTestStatusList/', views.get_test_status_list),
     path('createTest/', views.create_test),
-    # path('createTestStatus/', views.CreateTestStatusView.as_view()),
+    path('createTestStatus/', views.create_test_status),
     path('editTest/', views.edit_test),
     path('editTestSheet/', views.edit_test_sheet),
     path('deleteTest/', views.delete_test),

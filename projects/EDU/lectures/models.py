@@ -74,6 +74,24 @@ class LectureStatus(models.Model):
         return self.lectureStatusKey
 
 
+class LectureStatusPlus(models.Model):
+    lectureStatusPlusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
+                                            editable=False,
+                                            verbose_name='수강현황키')
+    lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
+    groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey', verbose_name='반키')
+    state = models.CharField(default='등록', max_length=10, verbose_name='수강상태')
+    reason = models.TextField(blank=True, verbose_name='사유')
+    createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
+    editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    def __str__(self):
+        return self.lectureStatusPlusKey
+
+    class Meta:
+        unique_together = ['lectureKey', 'groupKey']
+
+
 # 과제 테이블 생성
 class Assign(models.Model):
     assignKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
@@ -104,6 +122,12 @@ class AssignStatus(models.Model):
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
+    class Meta:
+        unique_together = ['studentKey', 'assignKey']
+
+    def __str__(self):
+        return self.assignStatusKey
+
 
 # 시험 테이블 생성
 class Test(models.Model):
@@ -133,6 +157,9 @@ class TestStatus(models.Model):
     testProgress = models.CharField(max_length=10, default='예정', verbose_name='진행상태')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    class Meta:
+        unique_together = ['studentKey', 'testKey']
 
     def __str__(self):
         return self.testStatusKey
@@ -184,12 +211,11 @@ class Group(models.Model):
 class GroupStatus(models.Model):
     groupStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                       verbose_name='반키')
-    groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey',
-                                 verbose_name='반키')
+    groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey', verbose_name='반키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
-    def __str__(self):
-        return self.groupStatusKey
+    class Meta:
+        unique_together = ['groupKey', 'studentKey']
