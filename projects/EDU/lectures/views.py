@@ -407,7 +407,7 @@ def get_lecture_list(request):
 def get_past_lecture_list(request):
     try:
         if Teacher.objects.get(teacherKey=request.data['userKey']).exist():
-            data = list(Teacher.objects.filter(teacherKey=request.data['userKey'],
+            data = list(Lecture.objects.filter(teacherKey=request.data['userKey'],
                                                startDate__gte=request.data['date'],
                                                endDate__lte=request.data['data']).values())
 
@@ -426,6 +426,11 @@ def get_past_lecture_list(request):
 @api_view(['POST'])
 def get_lecture_info(request):
     try:
+        ko_kr = Func(
+            "lectureName",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
         # userKey 있는 지 확인
         if len(request.data["userKey"]) > 0 and len(request.data["roomKey"]) > 0:
             # 받은 userKey와 teacherKey와 매칭
@@ -486,8 +491,10 @@ def create_lecture(request):
                 serializer.save()
 
                 subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=request.data['lectureKey'])
+                total = LectureStatusPlus.objects.filter(lectuerKey=request.data['lectureKey'])
+
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[subject])
-                # Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total)
+                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total.count())
 
                 result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -588,7 +595,8 @@ def edit_lecture(request):
             if serializer.is_valid():
                 serializer.save()
 
-                # Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total)
+                total = LectureStatusPlus.objects.filter(lectuerKey=request.data['lectureKey'])
+                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total.count())
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
@@ -971,6 +979,28 @@ def get_group_list(request):
 
 
 @api_view(['POST'])
+def get_group_status_list(request):
+    try:
+        ko_kr = Func(
+            "groupName",
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
+
+        group = Group.objects.filter(groupKey=request.data['groupKey'])
+
+        student_key = GroupStatus.objects.filter(groupKey=group)
+        data = list(Student.objects.filter(studentKey__in=student_key).order_by(ko_kr.asc()).values())
+
+        result = {'resultData': data, 'count': len(data)}
+
+        return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
 def create_group(request):
     try:
         serializer = GroupSerializer(data=request.data)
@@ -1037,6 +1067,24 @@ def delete_group(request):
 
             group = Group.objects.filter(groupKey=request.data['groupKey'])
             group.delete()
+
+            return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
+        else:
+            return JsonResponse({'chunbae': '삭제되지 않았습니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+@api_view(['POST'])
+def delete_group_status(request):
+    try:
+        group = Group.objects.filter(groupKey=request.data['groupKey'])
+        student = Student.objects.filter(studentKey=request.data['studentKey'])
+
+        if group and student:
+
+            groupStatus = GroupStatus.objects.filter(groupKey=group).filter(studentKey__in=student)
+            groupStatus.delete()
 
             return JsonResponse({'chunbae': '데이터 삭제.'}, status=200)
         else:

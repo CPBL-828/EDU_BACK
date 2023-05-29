@@ -45,9 +45,11 @@ urlpatterns = [
     path('editTestSheet/', views.edit_test_sheet),
     path('deleteTest/', views.delete_test),
     path('getGroupList/', views.get_group_list),
+    path('getGroupStatusList/', views.get_group_status_list),
     path('createGroup/', views.create_group),
     path('createGroupStatus/', views.create_group_status),
     path('editGroup/', views.edit_group),
     path('deleteGroup/', views.delete_group),
+    path('deleteGroupStatus/', views.delete_group_status),
     path('', include(router.urls)),
 ]
