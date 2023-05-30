@@ -1008,21 +1008,21 @@ def get_group_list(request):
         )
 
         if request.data['userType'] == 'ADM':
-            teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+            teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
             data = list(Group.objects.all().order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
         elif request.data['userType'] == 'TEA':
-            teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
+            teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
             data = list(Group.objects.filter(teacherKey=teacher).order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
         elif request.data['userType'] == 'STU':
-            student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
+            student = GroupStatus.objects.get(studentKey=request.data['studentKey'])
             group = GroupStatus.objects.filter(studentKey=student).values('groupKey')
             data = list(Group.objects.filter(groupKey__in=group).order_by(ko_kr.asc()).values())
 
