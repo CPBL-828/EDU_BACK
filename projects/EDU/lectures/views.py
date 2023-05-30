@@ -1008,7 +1008,6 @@ def get_group_list(request):
         )
 
         if request.data['userType'] == 'ADM':
-            teacher = Teacher.objects.get(teacherKey=request.data['teacherKey'])
             data = list(Group.objects.all().order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
