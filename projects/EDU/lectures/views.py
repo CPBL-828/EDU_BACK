@@ -331,6 +331,18 @@ def get_lecture_list(request):
 
                     return JsonResponse(result, status=200)
 
+                elif Student.objects.filter(studentKey=request.data["userKey"]).exists():
+                    student = Student.objects.get(teacherKey=request.data["userKey"])
+
+                    group = GroupStatus.objects.filter(studentKey=student)
+                    lecture = LectureStatus.objects.filter(groupKey__in=group).values("lectureKey")
+
+                    data = list(Lecture.objects.filter(lectureKey__in=lecture).values())
+
+                    result = {'resultData': data, 'count': len(data)}
+
+                    return JsonResponse(result, status=200)
+
                 else:
                     return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
 
@@ -454,6 +466,29 @@ def get_lecture_info(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
+
+@api_view(['POST'])
+def get_lecture_status_list(request):
+    try:
+        ko_kr = Func(
+            "name", # 학생 모델 : name 필드
+            function="ko_KR.utf8",
+            template='(%(expressions)s) COLLATE "%(function)s"'
+        )
+
+        lecture = Lecture.objects.filter(lectureKey=request.data['lectureKey'])
+
+        group_key = LectureStatusPlus.objects.filter(lectureKey=lecture)
+        student_key = GroupStatus.objects.filter(groupKey__in=group_key).values('studentKey')
+
+        data = list(Student.objects.filter(studentKey__in=student_key).order_by(ko_kr.asc()).values())
+
+        result = {'resultData': data, 'count': len(data)}
+
+        return JsonResponse(result, status=200)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 @api_view(['POST'])
 def create_lecture_plan(request):
@@ -642,6 +677,23 @@ def get_assign_list(request):
 
         else:
             return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+
+@api_view(['POST'])
+def get_assign_status_list(request):
+    try:
+        if AssignStatus.objects.filter(studentKeyKey=request.data['studentKey']).exists():
+            data = list(AssignStatus.objects.filter(studentKey=request.data['studentKey']).order_by('studentName').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        else:
+            return JsonResponse({'chunbae': ' 데이터가 존재하지 않습니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
@@ -955,24 +1007,28 @@ def get_group_list(request):
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
 
-        group = Group.objects.filter(groupKey=request.data['groupKey'])
-        teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
-        student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
-
         if request.data['userType'] == 'ADM':
+            teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
             data = list(Group.objects.all().order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
         elif request.data['userType'] == 'TEA':
+            teacher = Teacher.objects.filter(teacherKey=request.data['teacherKey'])
             data = list(Group.objects.filter(teacherKey=teacher).order_by(ko_kr.asc()).values())
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
 
-        # elif request.data['userType'] == 'STU':
-        #     gstat = GroupStatus.
+        elif request.data['userType'] == 'STU':
+            student = GroupStatus.objects.filter(studentKey=request.data['studentKey'])
+            group = GroupStatus.objects.filter(studentKey=student).values('groupKey')
+            data = list(Group.objects.filter(groupKey__in=group).order_by(ko_kr.asc()).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
@@ -989,7 +1045,7 @@ def get_group_status_list(request):
 
         group = Group.objects.filter(groupKey=request.data['groupKey'])
 
-        student_key = GroupStatus.objects.filter(groupKey=group)
+        student_key = GroupStatus.objects.filter(groupKey=group).values('studentKey')
         data = list(Student.objects.filter(studentKey__in=student_key).order_by(ko_kr.asc()).values())
 
         result = {'resultData': data, 'count': len(data)}
