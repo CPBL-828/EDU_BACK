@@ -1022,7 +1022,7 @@ def get_group_list(request):
             return JsonResponse(result, status=200)
 
         elif request.data['userType'] == 'STU':
-            student = GroupStatus.objects.get(studentKey=request.data['studentKey'])
+            student = Student.objects.get(studentKey=request.data['studentKey'])
             group = GroupStatus.objects.filter(studentKey=student).values('groupKey')
             data = list(Group.objects.filter(groupKey__in=group).order_by(ko_kr.asc()).values())
 
@@ -1043,7 +1043,7 @@ def get_group_status_list(request):
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
 
-        group = Group.objects.filter(groupKey=request.data['groupKey'])
+        group = Group.objects.get(groupKey=request.data['groupKey'])
 
         student_key = GroupStatus.objects.filter(groupKey=group).values('studentKey')
         data = list(Student.objects.filter(studentKey__in=student_key).order_by(ko_kr.asc()).values())
