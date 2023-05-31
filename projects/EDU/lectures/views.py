@@ -517,20 +517,27 @@ def create_lecture(request):
     try:
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
-            lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
-            group = Lecture.objects.get(lectureKey=lecture).values('groupKey')
+            lecture = Lecture.objects.values().get(lectureKey=request.data['lectureKey'])
+            group = Lecture.objects.values_list("groupKey", flat=True).get(lectureKey=lecture)
             student_list = list(GroupStatus.objects.filter(groupKey=group).values('studentKey'))
 
             data_list = []
 
             for i in student_list:
-                item = {'groupKey': group, 'studentKey': i}
+                item = {"groupKey": group, "studentKey": i, "reason": ""}
                 data_list.append(item)
 
             lecture_ser = LectureSerializer(lecture, data=request.data, partial=True)
             lecture_status_ser = LectureStatusPlusSerializer(data=student_list, many=isinstance(request.data, list))
 
-            if lecture_ser.is_valid() and group.ser.is_valid():
+            print("data_list : \n", data_list)
+            if lecture_status_ser.is_valid():
+                print("문제 없음")
+            else:
+                print("여기가 문제야!!\n")
+                print("error : ", lecture_status_ser.errors)
+
+            if lecture_ser.is_valid() and lecture_status_ser.is_valid():
                 lecture_ser.save()
                 lecture_status_ser.save()
 

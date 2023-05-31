@@ -16,12 +16,23 @@ class LectureRoom(models.Model):
                                verbose_name='강의실키')
     name = models.CharField(max_length=10, unique=True, verbose_name='강의실명')
     type = models.CharField(max_length=10, verbose_name='유형')
+    code = models.CharField(max_length=50, null=True, blank=True, unique=True, verbose_name='강의실 코드')
     totalPeople = models.IntegerField(verbose_name='총수용인원')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
     def __str__(self):
         return self.roomKey
+
+    def save(self, *args, **kwargs):
+        if self.code is None:
+            self.code = 'class' + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+
+            super(LectureRoom, self).save(*args, **kwargs)
+
+        else:
+            self.code = self.code
+            super(LectureRoom, self).save(*args, **kwargs)
 
 
 # 강의 모델 작성
