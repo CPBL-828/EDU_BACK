@@ -471,7 +471,7 @@ def get_lecture_info(request):
 def get_lecture_status_list(request):
     try:
         ko_kr = Func(
-            "name", # 학생 모델 : name 필드
+            "name",  # 학생 모델 : name 필드
             function="ko_KR.utf8",
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
@@ -489,6 +489,7 @@ def get_lecture_status_list(request):
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
 
 @api_view(['POST'])
 def create_lecture_plan(request):
@@ -1118,7 +1119,7 @@ def edit_group(request):
 @api_view(['POST'])
 def edit_group_status(request):
     try:
-        group = Group.objects.get(groupKey=request.data['groupKey'])
+        group = Group.objects.get(groupKey=request.data[0]['groupKey'])
         GroupStatus.objects.filter(groupKey=group).delete()
 
         serializer = GroupStatusSerializer(data=request.data, many=isinstance(request.data, list))
@@ -1132,6 +1133,7 @@ def edit_group_status(request):
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
 
 @api_view(['POST'])
 def delete_group(request):
@@ -1147,6 +1149,7 @@ def delete_group(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
 
 @api_view(['POST'])
 def delete_group_status(request):
