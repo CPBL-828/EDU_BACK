@@ -245,6 +245,18 @@ def get_student_list(request):
             function="ko_KR.utf8",
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
+
+        # student_list = list(GroupStatus.objects.filter(groupKey=group).values_list('studentKey', flat=True))
+        # print("studentList : \n", student_list)
+        #
+        # data_list = []
+        #
+        # for i in student_list:
+        #     item = {"lectureKey": lecture, "groupKey": group, "studentKey": i}
+        #     data_list.append(item)
+        #
+        # print("data_list : \n", data_list)
+
         # userKey 있는 지 확인
         if len(request.data["userKey"]) > 0 and len(request.data['lectureKey']) == 0:
 

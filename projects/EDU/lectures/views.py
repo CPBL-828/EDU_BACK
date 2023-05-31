@@ -517,35 +517,33 @@ def create_lecture(request):
     try:
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
-            lecture = Lecture.objects.values().get(lectureKey=request.data['lectureKey'])
+            lecture = Lecture.objects.values_list("lectureKey", flat=True).get(lectureKey=request.data['lectureKey'])
             group = Lecture.objects.values_list("groupKey", flat=True).get(lectureKey=lecture)
-            student_list = list(GroupStatus.objects.filter(groupKey=group).values('studentKey'))
+            group_data = list(Lecture.objects.filter(lectureKey=lecture).values_list('groupKey', flat=True))
 
             data_list = []
 
-            for i in student_list:
-                item = {"groupKey": group, "studentKey": i, "reason": ""}
+            for i in group_data:
+                item = {"lectureKey": lecture, "groupKey": i}
                 data_list.append(item)
 
-            lecture_ser = LectureSerializer(lecture, data=request.data, partial=True)
-            lecture_status_ser = LectureStatusPlusSerializer(data=student_list, many=isinstance(request.data, list))
+            lecture_ser = LectureSerializer(Lecture.objects.get(lectureKey=lecture), data=request.data, partial=True)
+            lecture_status_ser = LectureStatusPlusSerializer(data=data_list, many=isinstance(data_list, list))
 
-            print("data_list : \n", data_list)
-            if lecture_status_ser.is_valid():
-                print("문제 없음")
-            else:
-                print("여기가 문제야!!\n")
-                print("error : ", lecture_status_ser.errors)
-
-            if lecture_ser.is_valid() and lecture_status_ser.is_valid():
+            if lecture_ser.is_valid():
                 lecture_ser.save()
-                lecture_status_ser.save()
 
-                subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=request.data['lectureKey'])
+                if lecture_status_ser.is_valid():
+                    lecture_status_ser.save()
+                else:
+                    result = {'chunbae': '생성 오류.', 'resultData': lecture_status_ser.errors}
+                    return JsonResponse(result, status=400)
+
+                subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=lecture)
                 total = GroupStatus.objects.filter(groupKey=group)
 
-                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[subject])
-                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total.count())
+                Lecture.objects.filter(lectureKey=lecture).update(color=colors[subject])
+                Lecture.objects.filter(lectureKey=lecture).update(total=total.count())
 
                 result = {'chunbae': '데이터 생성.', 'resultData': lecture_ser.data}
                 return JsonResponse(result, status=201)
@@ -640,15 +638,15 @@ def edit_lecture(request):
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
             lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
-            # total = list(LectureStatus.objects.filter(lectureKey=lecture).values())
+            group = Lecture.objects.values_list("groupKey", flat=True).get(lectureKey=lecture)
 
             serializer = LectureSerializer(lecture, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
 
-                total = LectureStatusPlus.objects.filter(lectuerKey=request.data['lectureKey'])
-                Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total.count())
+                total = GroupStatus.objects.filter(groupKey=group)
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(editDate=datetime.datetime.now())
+                Lecture.objects.filter(lectureKey=lecture).update(total=total.count())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)
@@ -1138,9 +1136,15 @@ def edit_group_status(request):
         group = Group.objects.get(groupKey=request.data[0]['groupKey'])
         GroupStatus.objects.filter(groupKey=group).delete()
 
+        lecture = list(Lecture.objects.filter(groupKey=group).values_list('lectureKey', flat=True))
+
         serializer = GroupStatusSerializer(data=request.data, many=isinstance(request.data, list))
         if serializer.is_valid():
             serializer.save()
+
+            total = GroupStatus.objects.filter(groupKey=group)
+            Lecture.objects.filter(lectureKey__in=lecture).update(total=total.count())
+
             result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
