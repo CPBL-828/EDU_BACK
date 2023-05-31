@@ -514,28 +514,36 @@ def create_lecture(request):
               "탐구": "#678cbf", "특성화": "#a4a6d2", "논술": "#cc6699", "경시": "#e55c65",
               "SAT": "#e58a4e", "ACT": "#74c29a", "AP": "#5db7ad"}
 
-    # total = list(LectureStatus.objects.filter(lectureKey=request.data['lectureKey']).values())
-
     try:
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
             lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+            group = Group.objects.get(groupKey=request.data['groupKey'])
+            student_list = list(GroupStatus.objects.filter(groupKey=group).values('studentKey'))
 
-            serializer = LectureSerializer(lecture, data=request.data, partial=True)
+            data_list = []
 
-            if serializer.is_valid():
-                serializer.save()
+            for i in student_list:
+                item = {'groupKey': group, 'studentKey': i}
+                data_list.append(item)
+
+            lecture_ser = LectureSerializer(lecture, data=request.data, partial=True)
+            lecture_status_ser = LectureStatusPlusSerializer(data=student_list, many=isinstance(request.data, list))
+
+            if lecture_ser.is_valid() and group.ser.is_valid():
+                lecture_ser.save()
+                lecture_status_ser.save()
 
                 subject = Lecture.objects.values_list('subject', flat=True).get(lectureKey=request.data['lectureKey'])
-                total = LectureStatusPlus.objects.filter(lectuerKey=request.data['lectureKey'])
+                total = GroupStatus.objects.filter(groupKey=group)
 
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(color=colors[subject])
                 Lecture.objects.filter(lectureKey=request.data['lectureKey']).update(total=total.count())
 
-                result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                result = {'chunbae': '데이터 생성.', 'resultData': lecture_ser.data}
                 return JsonResponse(result, status=201)
             else:
-                result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+                result = {'chunbae': '생성 오류.', 'resultData': lecture_ser.errors}
                 return JsonResponse(result, status=400)
 
         else:
@@ -687,7 +695,8 @@ def get_assign_list(request):
 def get_assign_status_list(request):
     try:
         if AssignStatus.objects.filter(studentKeyKey=request.data['studentKey']).exists():
-            data = list(AssignStatus.objects.filter(studentKey=request.data['studentKey']).order_by('studentName').values())
+            data = list(
+                AssignStatus.objects.filter(studentKey=request.data['studentKey']).order_by('studentName').values())
 
             result = {'resultData': data, 'count': len(data)}
 
