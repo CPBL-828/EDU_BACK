@@ -1037,7 +1037,7 @@ def get_group_list(request):
 def get_group_status_list(request):
     try:
         ko_kr = Func(
-            "groupName",
+            "name",
             function="ko_KR.utf8",
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
