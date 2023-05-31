@@ -31,6 +31,7 @@ class Lecture(models.Model):
     roomKey = models.ForeignKey('LectureRoom', on_delete=models.CASCADE, db_column='roomKey', verbose_name='강의실키')
     teacherKey = models.ForeignKey('members.Teacher', on_delete=models.CASCADE, db_column='teacherKey',
                                    verbose_name='강사키')
+    groupKey = models.ForeignKey('Group', on_delete=models.CASCADE, db_column='groupKey', verbose_name='반 키')
     adminKey = models.CharField(max_length=50, blank=True, null=True, db_column='adminKey', verbose_name='관리자키')
     lectureName = models.CharField(max_length=10, verbose_name='강의명')
     roomName = models.CharField(max_length=10, verbose_name='강의실명')
