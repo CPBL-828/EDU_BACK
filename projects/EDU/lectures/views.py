@@ -1125,10 +1125,10 @@ def edit_group_status(request):
         serializer = GroupStatusSerializer(data=request.data, many=isinstance(request.data, list))
         if serializer.is_valid():
             serializer.save()
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
             return JsonResponse(result, status=201)
         else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
             return JsonResponse(result, status=400)
 
     except KeyError:
