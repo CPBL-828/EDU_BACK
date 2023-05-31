@@ -1116,6 +1116,24 @@ def edit_group(request):
 
 
 @api_view(['POST'])
+def edit_group_status(request):
+    try:
+        group = Group.objects.get(groupKey=request.data['groupKey'])
+        GroupStatus.objects.filter(groupKey=group).delete()
+
+        serializer = GroupStatusSerializer(data=request.data, many=isinstance(request.data, list))
+        if serializer.is_valid():
+            serializer.save()
+            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
+@api_view(['POST'])
 def delete_group(request):
     try:
         if Group.objects.filter(groupKey=request.data['groupKey']).exists():
