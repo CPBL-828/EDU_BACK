@@ -518,7 +518,7 @@ def create_lecture(request):
         if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
 
             lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
-            group = Lecture.objects.get(lectureKey=lecture).values('lectureKey')
+            group = Lecture.objects.get(lectureKey=lecture).values('groupKey')
             student_list = list(GroupStatus.objects.filter(groupKey=group).values('studentKey'))
 
             data_list = []
