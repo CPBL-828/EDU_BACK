@@ -332,12 +332,12 @@ def get_lecture_list(request):
                     return JsonResponse(result, status=200)
 
                 elif Student.objects.filter(studentKey=request.data["userKey"]).exists():
-                    student = Student.objects.get(teacherKey=request.data["userKey"])
+                    student = Student.objects.get(studentKey=request.data["userKey"])
 
-                    group = GroupStatus.objects.filter(studentKey=student)
-                    lecture = LectureStatus.objects.filter(groupKey__in=group).values("lectureKey")
+                    group = GroupStatus.objects.filter(studentKey=student).values("groupKey")
+                    lecture = Lecture.objects.filter(groupKey__in=group).values_list("lectureKey", flat=True)
 
-                    data = list(Lecture.objects.filter(lectureKey__in=lecture).values())
+                    data = list(Lecture.objects.filter(lectureKey__in=lecture).values().distinct('lectureKey'))
 
                     result = {'resultData': data, 'count': len(data)}
 
