@@ -478,7 +478,7 @@ def get_lecture_status_list(request):
 
         lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
 
-        group_key = LectureStatusPlus.objects.filter(lectureKey=lecture)
+        group_key = LectureStatusPlus.objects.filter(lectureKey=lecture).values_list("groupKey", flat=True)
         student_key = GroupStatus.objects.filter(groupKey__in=group_key).values('studentKey')
 
         data = list(Student.objects.filter(studentKey__in=student_key).order_by(ko_kr.asc()).values())
