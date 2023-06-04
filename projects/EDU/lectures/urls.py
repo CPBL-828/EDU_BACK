@@ -25,6 +25,7 @@ urlpatterns = [
     path('getLectureList/', views.get_lecture_list),
     path('getPastLectureList/', views.get_past_lecture_list),
     path('getLectureInfo/', views.get_lecture_info),
+    path('getLectureStatusList/', views.get_lecture_status_list),
     path('createLecturePlan/', views.create_lecture_plan),
     path('createLecture/', views.create_lecture),
     path('createLectureStatus/', views.create_lecture_status),
