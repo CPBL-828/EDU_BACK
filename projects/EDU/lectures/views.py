@@ -476,7 +476,7 @@ def get_lecture_status_list(request):
             template='(%(expressions)s) COLLATE "%(function)s"'
         )
 
-        lecture = Lecture.objects.filter(lectureKey=request.data['lectureKey'])
+        lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
 
         group_key = LectureStatusPlus.objects.filter(lectureKey=lecture)
         student_key = GroupStatus.objects.filter(groupKey__in=group_key).values('studentKey')
