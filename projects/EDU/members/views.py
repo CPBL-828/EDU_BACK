@@ -331,13 +331,20 @@ def get_student_list(request):
             except KeyError:
                 return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
-        elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) == 0:
+        elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) == 0 and len(request.data["parentKey"]) == 0:
 
             data = list(Student.objects.filter(
                 Q(name__icontains=request.data['search']) |
                 Q(school__icontains=request.data['search']) |
                 Q(grade__icontains=request.data['search'])
             ).order_by(ko_kr.asc()).values())
+
+            result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
+
+        elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) == 0 and len(request.data["parentKey"]) > 0:
+
+            data = list(Student.objects.filter(parentKey=request.data['parentKey']).values())
 
             result = {'resultData': data, 'count': len(data)}
             return JsonResponse(result, status=200)
