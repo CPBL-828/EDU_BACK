@@ -531,9 +531,9 @@ def create_lecture(request):
             lecture_status_ser = LectureStatusPlusSerializer(data=data_list, many=isinstance(data_list, list))
 
             if lecture_ser.is_valid():
-                lecture_ser.save()
 
                 if lecture_status_ser.is_valid():
+                    lecture_ser.save()
                     lecture_status_ser.save()
                 else:
                     result = {'chunbae': '생성 오류.', 'resultData': lecture_status_ser.errors}
@@ -681,7 +681,7 @@ def delete_lecture(request):
 @api_view(['POST'])
 def get_assign_list(request):
     try:
-        if Assign.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
             data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
                                               ).order_by('deadLine').values())
 
