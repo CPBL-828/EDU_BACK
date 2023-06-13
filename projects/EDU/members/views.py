@@ -264,10 +264,10 @@ def get_student_list(request):
                 if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
                     # 받은 userKey와 teacherKey와 매칭
                     key = Teacher.objects.get(teacherKey=request.data["userKey"])
-                    # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
-                    lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('lectureName')
-                    # 강의키에 맞는 학생 리스트 정렬
-                    student = LectureStatusPlus.objects.filter(lectureKey__in=lecture).values('studentKey')
+                    # 강사키에 맞는 반 리스트 정렬
+                    group = Lecture.objects.filter(teacherKey=key).values('groupKey')
+                    # 반 키에 맞는 학생 리스트 정렬
+                    student = GroupStatus.objects.filter(groupKey__in=group).values('studentKey').distinct('studentKey')
                     # 학생 리스트 생성 : 검색 기능 포함
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |
@@ -299,7 +299,10 @@ def get_student_list(request):
                 if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
                     # 받은 userKey와 teacherKey와 매칭
                     key = Teacher.objects.get(teacherKey=request.data["userKey"])
-                    student = LectureStatusPlus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
+                    # 강사키에 맞는 반 리스트 정렬
+                    group = Lecture.objects.filter(teacherKey=key).values('groupKey')
+                    # 반 키에 맞는 학생 리스트 정렬
+                    student = GroupStatus.objects.filter(groupKey__in=group).values('studentKey').distinct('studentKey')
 
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |
@@ -318,7 +321,8 @@ def get_student_list(request):
 
         elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) > 0:
             try:
-                student = LectureStatusPlus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
+                group = Lecture.objects.filter(lectureKey=request.data['lectureKey']).values('groupKey')
+                student = GroupStatus.objects.filter(groupKey__in=group).values('studentKey')
 
                 data = list(Student.objects.filter(studentKey__in=student).filter(
                     Q(name__icontains=request.data['search']) |
