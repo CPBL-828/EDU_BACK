@@ -59,17 +59,6 @@ class Student(models.Model):
     parentKey = models.ForeignKey('Parent', on_delete=models.CASCADE, db_column='parentKey', verbose_name='부모키')
     name = models.CharField(max_length=10, verbose_name='학생명')
     id = models.CharField(max_length=50, null=True, blank=True, unique=True, verbose_name='학생id')
-
-    def save(self, *args, **kwargs):
-        if self.id is None:
-            self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
-
-            super(Student, self).save(*args, **kwargs)
-
-        else:
-            self.id = self.id
-            super(Student, self).save(*args, **kwargs)
-
     birth = models.DateField(verbose_name='생년월일')
     sex = models.CharField(max_length=1, verbose_name='성별')
     phone = models.CharField(max_length=11, verbose_name='연락처')
@@ -82,6 +71,19 @@ class Student(models.Model):
     profileImg = models.ImageField(null=True, blank=True, upload_to='profile', verbose_name='프로필사진링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    def save(self, *args, **kwargs):
+        if self.id is None:
+            self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
+            super(Student, self).save(*args, **kwargs)
+
+        else:
+            self.id = self.id
+            super(Student, self).save(*args, **kwargs)
+
+        parent = Parent.objects.get(parentKey=self.parentKey)
+        self.emergency = parent.phone
+        super(Student, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.studentKey
@@ -103,6 +105,12 @@ class Parent(models.Model):
         else:
             self.id = self.id
             super(Parent, self).save(*args, **kwargs)
+
+        students = self.student_set.all()
+        for student in students:
+            student.phone = self.phone
+            student.emergency = self.phone
+            student.save()
 
     phone = models.CharField(max_length=11, verbose_name='연락처')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')

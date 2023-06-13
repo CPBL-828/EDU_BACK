@@ -146,11 +146,18 @@ class Test(models.Model):
     testKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                verbose_name='시험키')
     lectureKey = models.ForeignKey('Lecture', on_delete=models.CASCADE, db_column='lectureKey', verbose_name='강의키')
+    lectureName = models.CharField(null=True, blank=True, max_length=10, verbose_name='강의명')
+    content = models.TextField(verbose_name='시험내용')
     testDate = models.DateTimeField(verbose_name='시험일자')
     testType = models.CharField(max_length=10, verbose_name='시험유형')
     testSheet = models.FileField(null=True, blank=True, upload_to='testSheet', verbose_name='시험지링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
+
+    def save(self, *args, **kwargs):
+            lecture = Lecture.objects.get(lectureKey=self.lectureKey)
+            self.lectureName = lecture.lectureName
+            super(Test, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.testKey
@@ -162,7 +169,8 @@ class TestStatus(models.Model):
                                      verbose_name='시험현황키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
-    studentName = models.CharField(max_length=10, verbose_name='학생명')
+    studentName = models.CharField(null=True, blank=True, max_length=10, verbose_name='학생명')
+    lectureName = models.CharField(null=True, blank=True, max_length=10, verbose_name='강의명')
     testKey = models.ForeignKey('Test', on_delete=models.CASCADE, db_column='testKey', verbose_name='시험키')
     state = models.CharField(max_length=1, default='N', verbose_name='응시여부')
     reason = models.TextField(blank=True, verbose_name='사유')
@@ -172,6 +180,11 @@ class TestStatus(models.Model):
 
     class Meta:
         unique_together = ['studentKey', 'testKey']
+
+    def save(self, *args, **kwargs):
+        student = Student.objects.get(studentKey=self.studentKey)
+        self.studentName = student.name
+        super(TestStatus, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.testStatusKey

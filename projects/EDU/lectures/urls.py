@@ -33,6 +33,7 @@ urlpatterns = [
     path('editLecture/', views.edit_lecture),
     path('deleteLecture/', views.delete_lecture),
     path('getAssignList/', views.get_assign_list),
+    path('getAssignStatusList/', views.get_assign_status_list),
     path('createAssign/', views.create_assign),
     path('createAssignStatus/', views.create_assign_status),
     path('editAssignFile/', views.edit_assign_file),

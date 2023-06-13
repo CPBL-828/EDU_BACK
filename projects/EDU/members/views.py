@@ -267,7 +267,7 @@ def get_student_list(request):
                     # 강사키에 맞는 강의 리스트 정렬 : 중복 강의명 제거)
                     lecture = Lecture.objects.filter(teacherKey=key).values('lectureKey').distinct('lectureName')
                     # 강의키에 맞는 학생 리스트 정렬
-                    student = LectureStatus.objects.filter(lectureKey__in=lecture).values('studentKey')
+                    student = LectureStatusPlus.objects.filter(lectureKey__in=lecture).values('studentKey')
                     # 학생 리스트 생성 : 검색 기능 포함
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |
@@ -299,7 +299,7 @@ def get_student_list(request):
                 if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
                     # 받은 userKey와 teacherKey와 매칭
                     key = Teacher.objects.get(teacherKey=request.data["userKey"])
-                    student = LectureStatus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
+                    student = LectureStatusPlus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
 
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |
@@ -318,7 +318,7 @@ def get_student_list(request):
 
         elif len(request.data["userKey"]) == 0 and len(request.data['lectureKey']) > 0:
             try:
-                student = LectureStatus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
+                student = LectureStatusPlus.objects.filter(lectureKey=request.data['lectureKey']).values('studentKey')
 
                 data = list(Student.objects.filter(studentKey__in=student).filter(
                     Q(name__icontains=request.data['search']) |
@@ -383,7 +383,7 @@ def edit_student(request):
             if serializer.is_valid():
                 serializer.save()
 
-                Student.objects.filter(studentKey=request.data['studentKey']).update(editDate=datetime.datetime.now())
+                Student.objects.filter(studentKey=student).update(editDate=datetime.datetime.now())
 
                 result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
                 return JsonResponse(result, status=201)

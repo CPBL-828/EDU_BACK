@@ -27,6 +27,8 @@ from django.db.models import F
 import datetime
 # settings 불러오기
 from config.settings import base
+# 장고 트랜잭션
+from django.db import transaction
 
 
 class LectureRoomViewSet(viewsets.ModelViewSet):
@@ -699,7 +701,9 @@ def get_assign_list(request):
 @api_view(['POST'])
 def get_assign_status_list(request):
     try:
-        if AssignStatus.objects.filter(studentKeyKey=request.data['studentKey']).exists():
+        lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+
+        if lecture.exists():
             data = list(
                 AssignStatus.objects.filter(studentKey=request.data['studentKey']).order_by('studentName').values())
 
@@ -717,18 +721,45 @@ def get_assign_status_list(request):
 @api_view(['POST'])
 def create_assign(request):
     try:
-        serializer = AssignSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        with transaction.atomic():
+            serializer = AssignSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
 
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
-        else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-            return JsonResponse(result, status=400)
+                if serializer.data['assignKey']:
+                    group = list(Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey", flat=True))
+                    assign = serializer.data['assignKey']
 
-    except KeyError:
-        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+                    student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey', flat=True)
+                    data_list = []
+
+                    for i in student_data:
+                        item = {"assignKey": assign, "studentKey": i}
+                        data_list.append(item)
+
+                    status_serial = AssignStatusSerializer(data=data_list, many=isinstance(data_list, list))
+
+                    if status_serial.is_valid():
+                        status_serial.save()
+                    else:
+                        result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
+                        return JsonResponse(result, status=400)
+
+                else:
+                    return JsonResponse({'chunbae': ' ValueError : assignKey.'}, status=400)
+
+                result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
+
+    except Exception as e:
+        # 예외 처리
+        error_message = str(e)
+        # 예외 처리 후 필요한 작업 수행
+        result = {'chunbae': '생성 오류.', 'resultData': str(e)}
+        return JsonResponse(result, status=400)
 
 
 @api_view(['POST'])
