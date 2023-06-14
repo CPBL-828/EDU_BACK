@@ -302,7 +302,6 @@ def get_student_list(request):
                     lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
                     # 반 키에 맞는 학생 리스트 정렬
                     student = list(GroupStatus.objects.filter(groupKey=lecture.groupKey).values_list('studentKey', flat=True))
-                    print("student : \n", student)
 
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |
