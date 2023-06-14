@@ -647,31 +647,71 @@ def create_work(request):
 
 @api_view(['POST'])
 def get_presence_list(request):
+    # required Key :  'date'
     try:
-        if Presence.objects.filter(presenceKey=request.data['presenceKey']).exists():
+        if request.data['date']:
+            data = list(Presence.objects.filter(createDate__icontains=request.data['date']).order_by('-createDate').values())
 
-            presence = Presence.objects.get(presenceKey=request.data['presenceKey'])
-
+            result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
 
         else:
+            current_time = datetime.now().date()
 
-            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+            data = list(Presence.objects.filter(
+                Q(createDate__year=current_time.year) &
+                Q(createDate__month=current_time.month) &
+                Q(createDate__day=current_time.day)
+            ).order_by('-createDate').values())
+
+            result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
 
 @api_view(['POST'])
 def create_presence(request):
     try:
-        serializer = PresenceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        # 현재 시스템의 날짜와 시간을 가져오기
+        current_date = datetime.now()
+        # 현재 날짜의 요일 가져오기 (1: 월요일, 2: 화요일, ..., 7: 일요일)
+        weekday = current_date.weekday() + 1
+        # 연월일 비교하기
+        current_time = datetime.now().date()
+        # 중복 데이터 확인
+        dup_date = Presence.objects.filter(
+            Q(createDate__year=current_time.year) &
+            Q(createDate__month=current_time.month) &
+            Q(createDate__day=current_time.day)
+        )
 
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
-        else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+        if dup_date.exists():
+            result = {'chunbae': '데이터가 이미 존재합니다.'}
             return JsonResponse(result, status=400)
+
+        else:
+            lecture = list(Lecture.objects.filter(day=weekday).values_list('lectureKey', flat=True))
+            group = list(Lecture.objects.filter(lectureKey__in=lecture).values_list('groupKey', flat=True))
+            student = list(GroupStatus.objects.filter(groupKey__in=group).values_list('studentKey', flat=True))
+
+            data_list = []
+
+            for i in student:
+                item = {"studentKey": i}
+                data_list.append(item)
+
+            serializer = PresenceSerializer(data=data_list, many=isinstance(data_list, list))
+            if serializer.is_valid():
+                serializer.save()
+
+                result = {'chunbae': '데이터 생성.', 'count': len(serializer.data)}
+                return JsonResponse(result, status=201)
+            else:
+                result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+                return JsonResponse(result, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
