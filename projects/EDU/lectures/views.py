@@ -933,17 +933,19 @@ def create_test(request):
                                                                                                  flat=True)
                         data_list = []
 
-
                         for i in student_data:
                             item = {"testKey": test, "studentKey": i}
                             data_list.append(item)
 
-                        print('data_list : \n', data_list)
-
                         status_serial = TestStatusSerializer(data=data_list, many=isinstance(data_list, list))
+                        record_serial = RecordSerializer(data=data_list, many=isinstance(data_list, list))
 
                         if status_serial.is_valid():
-                            status_serial.save()
+                            if record_serial.is_valid():
+                                status_serial.save()
+                                record_serial.save()
+                            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                            return JsonResponse(result, status=201)
                         else:
                             result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
                             return JsonResponse(result, status=400)
@@ -951,8 +953,7 @@ def create_test(request):
                     else:
                         return JsonResponse({'chunbae': ' ValueError : testKey.'}, status=400)
 
-                    result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-                    return JsonResponse(result, status=201)
+
                 else:
                     result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
                     return JsonResponse(result, status=400)
