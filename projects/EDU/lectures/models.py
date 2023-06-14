@@ -67,13 +67,6 @@ class Lecture(models.Model):
     def __str__(self):
         return self.lectureKey
 
-    def save(self, *args, **kwargs):
-        tests = self.test_set.all()
-        for test in tests:
-            test.lectureName = self.lectureName
-            test.save()
-
-
 # 수강 현황 테이블 생성
 class LectureStatus(models.Model):
     lectureStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
@@ -190,8 +183,6 @@ class TestStatus(models.Model):
     def save(self, *args, **kwargs):
         student = Student.objects.get(studentKey=self.studentKey)
         self.studentName = student.name
-        super(TestStatus, self).save(*args, **kwargs)
-
         test = Test.objects.get(testKey=self.testKey)
         self.lectureName = test.lectureName
         super(TestStatus, self).save(*args, **kwargs)
@@ -208,8 +199,8 @@ class Record(models.Model):
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
     recordAnalysis = models.TextField(blank=True, verbose_name='성적분석')
-    score = models.FloatField(verbose_name='점수')
-    rating = models.CharField(max_length=1, verbose_name='등급')
+    score = models.FloatField(null=True, verbose_name='점수')
+    rating = models.CharField(blank=True, null=True, max_length=1, verbose_name='등급')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
