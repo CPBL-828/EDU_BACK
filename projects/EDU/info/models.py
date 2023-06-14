@@ -44,6 +44,8 @@ class Attend(models.Model):
     def __str__(self):
         return self.attendKey
 
+    class Meta:
+        unique_together = ['lectureKey', 'studentKey']
 
 # 근무 테이블 생성
 class Work(models.Model):

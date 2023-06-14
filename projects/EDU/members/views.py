@@ -299,10 +299,10 @@ def get_student_list(request):
                 if Teacher.objects.filter(teacherKey=request.data["userKey"]).exists():
                     # 받은 userKey와 teacherKey와 매칭
                     key = Teacher.objects.get(teacherKey=request.data["userKey"])
-                    # 강사키에 맞는 반 리스트 정렬
-                    group = Lecture.objects.filter(teacherKey=key).values('groupKey')
+                    lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
                     # 반 키에 맞는 학생 리스트 정렬
-                    student = GroupStatus.objects.filter(groupKey__in=group).values('studentKey').distinct('studentKey')
+                    student = list(GroupStatus.objects.filter(groupKey=lecture.groupKey).values_list('studentKey', flat=True))
+                    print("student : \n", student)
 
                     data = list(Student.objects.filter(studentKey__in=student).filter(
                         Q(name__icontains=request.data['search']) |

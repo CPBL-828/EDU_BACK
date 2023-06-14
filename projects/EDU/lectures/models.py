@@ -67,6 +67,12 @@ class Lecture(models.Model):
     def __str__(self):
         return self.lectureKey
 
+    def save(self, *args, **kwargs):
+        tests = self.test_set.all()
+        for test in tests:
+            test.lectureName = self.lectureName
+            test.save()
+
 
 # 수강 현황 테이블 생성
 class LectureStatus(models.Model):
@@ -186,6 +192,10 @@ class TestStatus(models.Model):
         self.studentName = student.name
         super(TestStatus, self).save(*args, **kwargs)
 
+        test = Test.objects.get(testKey=self.testKey)
+        self.lectureName = test.lectureName
+        super(TestStatus, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.testStatusKey
 
@@ -194,8 +204,7 @@ class TestStatus(models.Model):
 class Record(models.Model):
     recordKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True, editable=False,
                                  verbose_name='성적키')
-    testStatusKey = models.ForeignKey('TestStatus', on_delete=models.CASCADE, db_column='testStatusKey',
-                                      verbose_name='시험현황키')
+    testKey = models.ForeignKey('Test', on_delete=models.CASCADE, db_column='testKey', verbose_name='시험키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
     recordAnalysis = models.TextField(blank=True, verbose_name='성적분석')
@@ -206,6 +215,9 @@ class Record(models.Model):
 
     def __str__(self):
         return self.recordKey
+
+    class Meta:
+        unique_together = ['studentKey', 'testKey']
 
 
 # 반 생성

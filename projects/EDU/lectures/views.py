@@ -30,6 +30,12 @@ from config.settings import base
 # 장고 트랜잭션
 from django.db import transaction
 
+# except Exception as e:
+# # 예외 처리
+# error_message = str(e)
+# # 예외 처리 후 필요한 작업 수행
+# result = {'chunbae': '생성 오류.', 'resultData': str(e)}
+# return JsonResponse(result, status=400)
 
 class LectureRoomViewSet(viewsets.ModelViewSet):
     queryset = LectureRoom.objects.all()
@@ -754,12 +760,8 @@ def create_assign(request):
                 result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
                 return JsonResponse(result, status=400)
 
-    except Exception as e:
-        # 예외 처리
-        error_message = str(e)
-        # 예외 처리 후 필요한 작업 수행
-        result = {'chunbae': '생성 오류.', 'resultData': str(e)}
-        return JsonResponse(result, status=400)
+    except KeyError:
+        return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
 
 
 @api_view(['POST'])
@@ -915,19 +917,50 @@ def get_test_status_list(request):
 @api_view(['POST'])
 def create_test(request):
     try:
-        serializer = TestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
+        try:
+            with transaction.atomic():
+                serializer = TestSerializer(data=request.data)
+                if serializer.is_valid():
+                    serializer.save()
 
-            result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-            return JsonResponse(result, status=201)
-        else:
-            result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
-            return JsonResponse(result, status=400)
+                    if serializer.data['testKey']:
+                        group = list(
+                            Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey",
+                                                                                                      flat=True))
+                        test = serializer.data['testKey']
 
+                        student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey',
+                                                                                                 flat=True)
+                        data_list = []
+
+
+                        for i in student_data:
+                            item = {"testKey": test, "studentKey": i}
+                            data_list.append(item)
+
+                        print('data_list : \n', data_list)
+
+                        status_serial = TestStatusSerializer(data=data_list, many=isinstance(data_list, list))
+
+                        if status_serial.is_valid():
+                            status_serial.save()
+                        else:
+                            result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
+                            return JsonResponse(result, status=400)
+
+                    else:
+                        return JsonResponse({'chunbae': ' ValueError : testKey.'}, status=400)
+
+                    result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                    return JsonResponse(result, status=201)
+                else:
+                    result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
+                    return JsonResponse(result, status=400)
+
+        except KeyError:
+            return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
-
 
 @api_view(['POST'])
 def create_test_status(request):
