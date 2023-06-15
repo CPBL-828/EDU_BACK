@@ -731,31 +731,32 @@ def create_assign(request):
             serializer = AssignSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                if request.data['type'] == '전체':
+                    if serializer.data['assignKey']:
+                        group = list(Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey",
+                                                                                                               flat=True))
+                        assign = serializer.data['assignKey']
 
-                if serializer.data['assignKey']:
-                    group = list(Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey", flat=True))
-                    assign = serializer.data['assignKey']
+                        student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey', flat=True)
+                        data_list = []
 
-                    student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey', flat=True)
-                    data_list = []
+                        for i in student_data:
+                            item = {"assignKey": assign, "studentKey": i}
+                            data_list.append(item)
 
-                    for i in student_data:
-                        item = {"assignKey": assign, "studentKey": i}
-                        data_list.append(item)
+                        status_serial = AssignStatusSerializer(data=data_list, many=isinstance(data_list, list))
 
-                    status_serial = AssignStatusSerializer(data=data_list, many=isinstance(data_list, list))
-
-                    if status_serial.is_valid():
-                        status_serial.save()
+                        if status_serial.is_valid():
+                            status_serial.save()
+                        else:
+                            result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
+                            return JsonResponse(result, status=400)
                     else:
-                        result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
-                        return JsonResponse(result, status=400)
+                        return JsonResponse({'chunbae': ' ValueError : assignKey.'}, status=400)
 
                 else:
-                    return JsonResponse({'chunbae': ' ValueError : assignKey.'}, status=400)
-
-                result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
-                return JsonResponse(result, status=201)
+                    result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
+                    return JsonResponse(result, status=201)
             else:
                 result = {'chunbae': '생성 오류.', 'resultData': serializer.errors}
                 return JsonResponse(result, status=400)
@@ -882,11 +883,20 @@ def delete_assign(request):
 @api_view(['POST'])
 def get_test_list(request):
     try:
-        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if request.data['lectureKey']:
             data = list(
                 Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
                                     testDate__icontains=request.data['testDate']
                                     ).order_by('-createDate').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        else:
+            data = list(Test.objects.filter(testType__icontains=request.data['type'],
+                                            testDate__icontains=request.data['testDate']
+                                            ).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -1253,3 +1263,20 @@ def delete_group_status(request):
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
+
+# @api_view(['POST'])
+# def get_record_list(request):
+#     try:
+#         if Test.objects.filter(testKey=request.data['testKey']).exists():
+#             data = list(
+#                 TestStatus.objects.filter(testKey=request.data['testKey']).order_by('studentName').values())
+#
+#             result = {'resultData': data, 'count': len(data)}
+#
+#             return JsonResponse(result, status=200)
+#
+#         else:
+#             return JsonResponse({'chunbae': ' 데이터가 존재하지 않습니다.'}, status=400)
+#
+#     except KeyError:
+#         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)

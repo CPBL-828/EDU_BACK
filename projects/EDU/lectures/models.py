@@ -126,6 +126,7 @@ class AssignStatus(models.Model):
                                        verbose_name='과제현황키')
     studentKey = models.ForeignKey('members.Student', on_delete=models.CASCADE, db_column='studentKey',
                                    verbose_name='학생키')
+    studentName = models.CharField(null=True, blank=True, max_length=10, verbose_name='학생명')
     assignKey = models.ForeignKey('Assign', on_delete=models.CASCADE, db_column='assignKey', verbose_name='과제키')
     assignState = models.CharField(max_length=10, default='미제출', verbose_name='제출상태')
     assignScore = models.FloatField(blank=True, null=True, verbose_name='점수')
@@ -135,6 +136,11 @@ class AssignStatus(models.Model):
 
     class Meta:
         unique_together = ['studentKey', 'assignKey']
+
+    def save(self, *args, **kwargs):
+        student = Student.objects.get(studentKey=self.studentKey)
+        self.studentName = student.name
+        super(AssignStatus, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.assignStatusKey
