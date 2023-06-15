@@ -649,8 +649,14 @@ def create_work(request):
 def get_presence_list(request):
     # required Key :  'date'
     try:
-        if request.data['date']:
+        if len(request.data['date']) > 0 and len(request.data['studentKey']) == 0:
             data = list(Presence.objects.filter(createDate__icontains=request.data['date']).order_by('-createDate').values())
+
+            result = {'resultData': data, 'count': len(data)}
+            return JsonResponse(result, status=200)
+
+        elif len(request.data['date']) == 0 and len(request.data['studentKey']) > 0:
+            data = list(Presence.objects.filter(studentKey=request.data['studentKey']).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
             return JsonResponse(result, status=200)
@@ -715,3 +721,22 @@ def create_presence(request):
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
+@api_view(['POST'])
+def edit_presence(request):
+    try:
+        presence = Presence.objects.get(studentKey=request.data['studentKey'])
+
+        serializer = PresenceSerializer(presence, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            Presence.objects.filter(presenceKey=serializer.data['presenceKey']).update(editDate=datetime.now())
+
+            result = {'chunbae': '데이터 수정.', 'resultData': serializer.data}
+            return JsonResponse(result, status=201)
+        else:
+            result = {'chunbae': '수정 오류.', 'resultData': serializer.errors}
+            return JsonResponse(result, status=400)
+
+    except KeyError:
+        return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
