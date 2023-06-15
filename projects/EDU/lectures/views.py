@@ -756,16 +756,7 @@ def create_assign(request):
                             return JsonResponse(result, status=400)
                     else:
                         return JsonResponse({'chunbae': ' ValueError : assignKey.'}, status=400)
-
-                elif request.data['type'] == '개별':
-                    status_serial = AssignStatusSerializer(data=request.data, many=isinstance(request.data, list))
-
-                    if status_serial.is_valid():
-                        status_serial.save()
-                    else:
-                        result = {'chunbae': '생성 오류.', 'resultData': status_serial.errors}
-                        return JsonResponse(result, status=400)
-
+                else:
                     result = {'chunbae': '데이터 생성.', 'resultData': serializer.data}
                     return JsonResponse(result, status=201)
             else:
