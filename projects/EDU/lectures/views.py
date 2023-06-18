@@ -707,9 +707,23 @@ def get_assign_list(request):
 @api_view(['POST'])
 def get_assign_status_list(request):
     try:
-        lecture = Lecture.objects.get(lectureKey=request.data['lectureKey'])
+        if len(request.data['assignKey']) > 0 and len(request.data['studentKey']) > 0:
+            data = list(
+                AssignStatus.objects.filter(assignKey=request.data['assignKey'])
+                .filter(studentKey=request.data['studentKey']).order_by('studentName').values())
 
-        if lecture.exists():
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        elif len(request.data['assignKey']) > 0 and len(request.data['studentKey']) == 0:
+            data = list(AssignStatus.objects.filter(assignKey=request.data['assignKey']).order_by('studentName').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        elif len(request.data['assignKey']) == 0 and len(request.data['studentKey']) > 0:
             data = list(
                 AssignStatus.objects.filter(studentKey=request.data['studentKey']).order_by('studentName').values())
 
@@ -718,7 +732,11 @@ def get_assign_status_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            return JsonResponse({'chunbae': ' 데이터가 존재하지 않습니다.'}, status=400)
+            data = list(AssignStatus.objects.all().order_by('studentName').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
