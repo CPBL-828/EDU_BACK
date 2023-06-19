@@ -73,6 +73,9 @@ class Student(models.Model):
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 
     def save(self, *args, **kwargs):
+        parent = Parent.objects.get(parentKey=self.parentKey)
+        self.emergency = parent.phone
+
         if self.id is None:
             self.id = self.name + '-' + str(shortuuid.ShortUUID(alphabet="0123456789").random(length=4))
             super(Student, self).save(*args, **kwargs)
@@ -80,10 +83,6 @@ class Student(models.Model):
         else:
             self.id = self.id
             super(Student, self).save(*args, **kwargs)
-
-        parent = Parent.objects.get(parentKey=self.parentKey)
-        self.emergency = parent.phone
-        super(Student, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.studentKey
