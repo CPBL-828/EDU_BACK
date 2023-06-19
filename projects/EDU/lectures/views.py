@@ -692,7 +692,7 @@ def get_assign_list(request):
     try:
         if len(request.data['lectureKey']) > 0 and len(request.data['studentKey']) == 0:
             data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
-                                              ).order_by('deadLine').values())
+                                              ).filter(type='전체').order_by('deadLine').values())
 
             result = {'resultData': data, 'count': len(data)}
 
