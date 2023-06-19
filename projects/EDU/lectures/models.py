@@ -154,6 +154,7 @@ class Test(models.Model):
     lectureName = models.CharField(null=True, blank=True, max_length=10, verbose_name='강의명')
     content = models.TextField(verbose_name='시험내용')
     testDate = models.DateTimeField(verbose_name='시험일자')
+    testProgress = models.CharField(max_length=10, default='예정', verbose_name='진행상태')
     testType = models.CharField(max_length=10, verbose_name='시험유형')
     testSheet = models.FileField(null=True, blank=True, upload_to='testSheet', verbose_name='시험지링크')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
@@ -179,7 +180,6 @@ class TestStatus(models.Model):
     testKey = models.ForeignKey('Test', on_delete=models.CASCADE, db_column='testKey', verbose_name='시험키')
     state = models.CharField(max_length=1, default='N', verbose_name='응시여부')
     reason = models.TextField(blank=True, verbose_name='사유')
-    testProgress = models.CharField(max_length=10, default='예정', verbose_name='진행상태')
     createDate = models.DateTimeField(auto_now_add=True, verbose_name='생성일')
     editDate = models.DateTimeField(null=True, blank=True, verbose_name='수정일')
 

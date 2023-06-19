@@ -25,6 +25,7 @@ from django.db.models import Q
 from django.db.models import F
 # 시간 관련 기능
 import datetime
+from django.utils import timezone
 # settings 불러오기
 from config.settings import base
 # 장고 트랜잭션
@@ -416,7 +417,15 @@ def get_lecture_list(request):
             return JsonResponse(result, status=200)
 
         else:
-            return JsonResponse({'chunbae': 'key 확인 : 데이터가 존재하지 않습니다.'}, status=400)
+            data = list(Lecture.objects.filter(
+                Q(lectureName__icontains=request.data['lectureName']) &
+                Q(roomName__icontains=request.data['roomName']) &
+                Q(target__icontains=request.data['target']))
+                        .order_by(ko_kr.asc()).values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
 
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
@@ -736,6 +745,15 @@ def get_assign_status_list(request):
 
             return JsonResponse(result, status=200)
 
+        # if len(request.data['assignKey']) > 0 and len(request.data['studentKey']) > 0:
+        #     data = list(
+        #         AssignStatus.objects.filter(assignKey=request.data['assignKey'])
+        #         .filter(studentKey=request.data['studentKey']).order_by('studentName').values())
+        #
+        #     result = {'resultData': data, 'count': len(data)}
+        #
+        #     return JsonResponse(result, status=200)
+
         # elif len(request.data['assignKey']) > 0 and len(request.data['studentKey']) == 0:
         #     data = list(
         #         AssignStatus.objects.filter(assignKey=request.data['assignKey']).order_by('studentName').values())
@@ -926,11 +944,14 @@ def delete_assign(request):
 @api_view(['POST'])
 def get_test_list(request):
     try:
+        past = Test.objects.filter(testDate__lt=timezone.now())
+        past.update(testProgress='마감')
+
         if request.data['lectureKey']:
             data = list(
-                Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
-                                    testDate__icontains=request.data['testDate']
-                                    ).order_by('-createDate').values())
+            Test.objects.filter(lectureKey=request.data['lectureKey'], testType__icontains=request.data['type'],
+                                testDate__icontains=request.data['testDate']
+                                ).order_by('-createDate').values())
 
             result = {'resultData': data, 'count': len(data)}
 
