@@ -392,6 +392,13 @@ def get_consult_list(request):
 
             return JsonResponse(result, status=200)
 
+        else:
+            data = list(Consult.objects.all().values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
