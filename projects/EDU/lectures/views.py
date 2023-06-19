@@ -30,6 +30,7 @@ from config.settings import base
 # 장고 트랜잭션
 from django.db import transaction
 
+
 # except Exception as e:
 # # 예외 처리
 # error_message = str(e)
@@ -689,9 +690,19 @@ def delete_lecture(request):
 @api_view(['POST'])
 def get_assign_list(request):
     try:
-        if Lecture.objects.filter(lectureKey=request.data['lectureKey']).exists():
+        if len(request.data['lectureKey']) > 0 and len(request.data['studentKey']) == 0:
             data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
                                               ).order_by('deadLine').values())
+
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
+        elif len(request.data['lectureKey']) > 0 and len(request.data['studentKey']) > 0:
+            print('data : ', request.data['studentKey'])
+            assign = list(
+            AssignStatus.objects.filter(studentKey=request.data['studentKey']).values_list('assignKey', flat=True))
+            data = list(Assign.objects.filter(assignKey__in=assign).filter(type='개별').order_by('deadLine').values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -717,7 +728,8 @@ def get_assign_status_list(request):
             return JsonResponse(result, status=200)
 
         elif len(request.data['assignKey']) > 0 and len(request.data['studentKey']) == 0:
-            data = list(AssignStatus.objects.filter(assignKey=request.data['assignKey']).order_by('studentName').values())
+            data = list(
+                AssignStatus.objects.filter(assignKey=request.data['assignKey']).order_by('studentName').values())
 
             result = {'resultData': data, 'count': len(data)}
 
@@ -751,11 +763,13 @@ def create_assign(request):
                 serializer.save()
                 if request.data['type'] == '전체':
                     if serializer.data['assignKey']:
-                        group = list(Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey",
-                                                                                                               flat=True))
+                        group = list(
+                            Lecture.objects.filter(lectureKey=request.data["lectureKey"]).values_list("groupKey",
+                                                                                                      flat=True))
                         assign = serializer.data['assignKey']
 
-                        student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey', flat=True)
+                        student_data = GroupStatus.objects.filter(groupKey=group[0]).values_list('studentKey',
+                                                                                                 flat=True)
                         data_list = []
 
                         for i in student_data:
@@ -992,6 +1006,7 @@ def create_test(request):
             return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
+
 
 @api_view(['POST'])
 def create_test_status(request):
