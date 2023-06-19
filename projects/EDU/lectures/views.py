@@ -690,26 +690,36 @@ def delete_lecture(request):
 @api_view(['POST'])
 def get_assign_list(request):
     try:
-        if len(request.data['lectureKey']) > 0 and len(request.data['studentKey']) == 0:
-            data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
-                                              ).filter(type='전체').order_by('deadLine').values())
-
-            result = {'resultData': data, 'count': len(data)}
-
-            return JsonResponse(result, status=200)
-
-        elif len(request.data['lectureKey']) > 0 and len(request.data['studentKey']) > 0:
-            print('data : ', request.data['studentKey'])
+        # type = (ALL, PER)
+        if len(request.data['studentKey']):
             assign = list(
-            AssignStatus.objects.filter(studentKey=request.data['studentKey']).values_list('assignKey', flat=True))
-            data = list(Assign.objects.filter(assignKey__in=assign).filter(type='개별').order_by('deadLine').values())
+                AssignStatus.objects.filter(studentKey=request.data['studentKey']).values_list('assignKey', flat=True))
+            data = list(Assign.objects.filter(
+                            lectureKey=request.data['lectureKey'],
+                            assignKey__in=assign, type='개별').order_by('deadLine').values())
 
             result = {'resultData': data, 'count': len(data)}
 
             return JsonResponse(result, status=200)
-
         else:
-            return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
+            if len(request.data['lectureKey']) > 0 and request.data['type'] == 'ALL':
+                data = list(Assign.objects.filter(lectureKey=request.data['lectureKey']
+                                                  ).filter(type='전체').order_by('deadLine').values())
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
+
+            elif len(request.data['lectureKey']) > 0 and request.data['type'] == 'PER':
+                data = list(Assign.objects.
+                            filter(lectureKey=request.data['lectureKey'], type='개별').order_by('deadLine').values())
+
+                result = {'resultData': data, 'count': len(data)}
+
+                return JsonResponse(result, status=200)
+
+            else:
+                return JsonResponse({'chunbae': 'key 확인 바랍니다.'}, status=400)
 
     except KeyError:
         return JsonResponse({'chunbae': ' key 확인 : 요청에 필요한 키를 확인해주세요.'}, status=400)
