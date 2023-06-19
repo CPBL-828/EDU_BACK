@@ -382,6 +382,12 @@ def get_consult_list(request):
 
             return JsonResponse(result, status=200)
 
+        elif len(request.data['userKey']) == 0 and len(request.data['studentKey']) > 0:
+            data = list(Consult.objects.filter(studentKey=request.data['studentKey'],
+                                               consultDate__icontains=request.data['date']).filter(
+                Q(consultType__icontains=request.data['search'])
+            ).values())
+
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
