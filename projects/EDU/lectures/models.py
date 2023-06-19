@@ -67,6 +67,11 @@ class Lecture(models.Model):
     def __str__(self):
         return self.lectureKey
 
+    def save(self, *args, **kwargs):
+        lecture = list(Lecture.objects.filter(lectureKey=self.lectureKey).values())
+        self.total = len(lecture)
+        super(Lecture, self).save(*args, **kwargs)
+
 # 수강 현황 테이블 생성
 class LectureStatus(models.Model):
     lectureStatusKey = models.CharField(max_length=50, primary_key=True, default=uuid.uuid4, unique=True,
