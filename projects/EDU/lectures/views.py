@@ -730,8 +730,7 @@ def get_assign_status_list(request):
     try:
         if len(request.data['assignKey']):
             data = list(
-                AssignStatus.objects.filter(assignKey=request.data['assignKey'])
-                .filter(studentKey=request.data['studentKey']).order_by('studentName').values())
+                AssignStatus.objects.filter(assignKey=request.data['assignKey']).order_by('studentName').values())
 
             result = {'resultData': data, 'count': len(data)}
 
