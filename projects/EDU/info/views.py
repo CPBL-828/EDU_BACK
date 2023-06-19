@@ -388,6 +388,10 @@ def get_consult_list(request):
                 Q(consultType__icontains=request.data['search'])
             ).values())
 
+            result = {'resultData': data, 'count': len(data)}
+
+            return JsonResponse(result, status=200)
+
     except KeyError:
         return JsonResponse({'chunbae': '잘못된 요청입니다.'}, status=400)
 
